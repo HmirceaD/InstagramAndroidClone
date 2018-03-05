@@ -16,6 +16,8 @@ import java.util.ArrayList;
 
 public class PostListAdapter extends ArrayAdapter<Post>{
 
+    //Todo(7) Refactor this to work for images from the db
+
     private ArrayList<Post> postList;
     private Context mContext;
 
@@ -55,7 +57,8 @@ public class PostListAdapter extends ArrayAdapter<Post>{
             ImageView shareButton = postView.findViewById(R.id.shareButton);
 
             if(userProfPic != null){
-                userProfPic.setImageDrawable(post.getUserProfilePicture().getDrawable());
+                //userProfPic.setImageDrawable(post.getUserProfilePicture().getDrawable());
+                userProfPic.setImageResource(R.drawable.instagram_default);
             }
 
             if(username != null){
@@ -63,7 +66,8 @@ public class PostListAdapter extends ArrayAdapter<Post>{
             }
 
             if(image != null){
-                image.setImageDrawable(post.getUserImage().getDrawable());
+                //image.setImageDrawable(post.getUserImage().getDrawable());
+                image.setImageResource(R.drawable.defaultpost);
             }
 
             if(likesText != null){

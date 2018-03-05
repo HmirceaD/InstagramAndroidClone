@@ -2,6 +2,7 @@ package com.example.mircea.instaapp.Raw;
 
 import android.widget.ImageView;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class Post {
@@ -11,15 +12,19 @@ public class Post {
     private ImageView userImage;
     private int likes;
     private int comments;
+    private long dateTime;
 
-    public Post(String u, ImageView uPP, ImageView uI, int l, int c){
+    public Post(){}
 
+    public Post(int c, int l, String u, long lt){
+
+        this.dateTime = lt;
         this.username = u;
-        this.userProfilePicture = uPP;
-        this.userImage = uI;
         this.likes = l;
         this.comments = c;
     }
+
+    public long getLocalDateTime() { return dateTime;}
 
     public String getUsername() {
         return username;

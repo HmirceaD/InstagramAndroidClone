@@ -10,11 +10,10 @@
 
     <ListView
         android:id="@+id/postLists"
-        android:layout_width="368dp"
-        android:layout_height="442dp"
+        android:layout_width="match_parent"
+        android:layout_height="475dp"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="15dp"
+        android:layout_alignParentStart="true"
         app:layout_constraintBottom_toBottomOf="parent"
         tools:layout_editor_absoluteX="8dp" />
 
@@ -22,11 +21,18 @@
         android:id="@+id/userText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_alignStart="@+id/postLists"
-        android:layout_marginTop="11dp"
         android:text="TextView"
         android:textAppearance="@style/TextAppearance.AppCompat.Menu"
         tools:layout_editor_absoluteX="16dp"
         tools:layout_editor_absoluteY="16dp" />
+
+    <Button
+        android:id="@+id/uploadButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:text="Upload Image" />
 </RelativeLayout>

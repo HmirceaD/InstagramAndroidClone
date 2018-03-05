@@ -46,9 +46,8 @@
         android:id="@+id/commentButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/postUsername"
-        android:layout_alignTop="@+id/likeButton"
-        android:layout_marginStart="14dp"
+        android:layout_above="@+id/noLikesText"
+        android:layout_toEndOf="@+id/noLikesText"
         android:background="#00000000"
         app:srcCompat="@drawable/commentbutton" />
 
@@ -56,9 +55,8 @@
         android:id="@+id/shareButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/commentsText"
         android:layout_alignTop="@+id/commentButton"
-        android:layout_marginStart="14dp"
-        android:layout_toEndOf="@+id/commentButton"
         android:background="#00000000"
         app:srcCompat="@drawable/sharebutton" />
 
