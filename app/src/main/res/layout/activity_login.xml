@@ -4,59 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#00000000"
     tools:context="com.example.mircea.instaapp.LoginActivity">
-
-    <EditText
-        android:id="@+id/userTextField"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="28dp"
-        android:ems="10"
-        android:inputType="textPersonName"
-        app:layout_constraintEnd_toEndOf="@+id/imageView"
-        app:layout_constraintHorizontal_bias="0.504"
-        app:layout_constraintStart_toStartOf="@+id/imageView"
-        app:layout_constraintTop_toBottomOf="@+id/imageView" />
-
-    <EditText
-        android:id="@+id/passwordTextField"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="20dp"
-        android:ems="10"
-        android:inputType="textPassword"
-        app:layout_constraintEnd_toEndOf="@+id/userTextField"
-        app:layout_constraintHorizontal_bias="0.875"
-        app:layout_constraintStart_toStartOf="@+id/userTextField"
-        app:layout_constraintTop_toBottomOf="@+id/userTextField" />
-
-    <Button
-        android:id="@+id/loginButton"
-        android:layout_width="98dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="13dp"
-        android:layout_marginTop="56dp"
-        android:text="Login"
-        app:layout_constraintEnd_toEndOf="@+id/passwordTextField"
-        app:layout_constraintStart_toEndOf="@+id/signUpButton"
-        app:layout_constraintTop_toBottomOf="@+id/passwordTextField" />
-
-    <Button
-        android:id="@+id/signUpButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="56dp"
-        android:text="Sign Up"
-        app:layout_constraintEnd_toStartOf="@+id/loginButton"
-        app:layout_constraintHorizontal_bias="0.4"
-        app:layout_constraintStart_toStartOf="@+id/passwordTextField"
-        app:layout_constraintTop_toBottomOf="@+id/passwordTextField" />
 
     <ImageView
         android:id="@+id/imageView"
@@ -65,9 +14,143 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="24dp"
+        android:background="#00000000"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/instalogo" />
+
+    <Button
+        android:id="@+id/emailSingInButton"
+        android:layout_width="125dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="14dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="28dp"
+        android:background="#EB2A2A"
+        android:text="Log in with Email"
+        android:textAllCaps="false"
+        android:textColor="#FFF"
+        app:layout_constraintEnd_toStartOf="@+id/guideline"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/signInTextViewLogin" />
+
+    <Button
+        android:id="@+id/facebookSignInButton"
+        android:layout_width="125dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="14dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="20dp"
+        android:background="#36488C"
+        android:text="Log in with Facebook"
+        android:textAllCaps="false"
+        android:textColor="#FFF"
+        app:layout_constraintEnd_toStartOf="@+id/guideline"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/emailSingInButton" />
+
+    <Button
+        android:id="@+id/twitterSignInButton"
+        android:layout_width="125dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="14dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="20dp"
+        android:background="#40A6F4"
+        android:text="Log in with Twitter"
+        android:textAllCaps="false"
+        android:textColor="#FFF"
+        app:layout_constraintEnd_toStartOf="@+id/guideline"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/facebookSignInButton" />
+
+    <TextView
+        android:id="@+id/signInTextViewLogin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="24dp"
+        android:text="Log in"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+        app:layout_constraintEnd_toStartOf="@+id/guideline"
+        app:layout_constraintHorizontal_bias="0.465"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_end="192dp" />
+
+    <TextView
+        android:id="@+id/SignUpTextV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="24dp"
+        android:text="Create Account"
+        android:textAppearance="@style/TextAppearance.AppCompat.SearchResult.Title"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.777"
+        app:layout_constraintStart_toStartOf="@+id/guideline"
+        app:layout_constraintTop_toBottomOf="@+id/imageView" />
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="28dp"
+        android:text="or"
+        app:layout_constraintEnd_toStartOf="@+id/SignUpTextV"
+        app:layout_constraintHorizontal_bias="0.584"
+        app:layout_constraintStart_toEndOf="@+id/signInTextViewLogin"
+        app:layout_constraintTop_toBottomOf="@+id/imageView" />
+
+    <Button
+        android:id="@+id/emailSignUpButton"
+        android:layout_width="125dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="14dp"
+        android:layout_marginTop="28dp"
+        android:text="Sign up email"
+        android:textAllCaps="false"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/guideline"
+        app:layout_constraintTop_toBottomOf="@+id/SignUpTextV" />
+
+    <Button
+        android:id="@+id/facebookSignUpButton"
+        android:layout_width="125dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="14dp"
+        android:layout_marginTop="15dp"
+        android:text="Sign up facebook"
+        android:textAllCaps="false"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.488"
+        app:layout_constraintStart_toStartOf="@+id/guideline"
+        app:layout_constraintTop_toBottomOf="@+id/emailSignUpButton" />
+
+    <Button
+        android:id="@+id/twitterSignUpButton"
+        android:layout_width="125dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="14dp"
+        android:layout_marginTop="20dp"
+        android:text="Sign Up twitter"
+        android:textAllCaps="false"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/guideline"
+        app:layout_constraintTop_toBottomOf="@+id/facebookSignUpButton" />
 </android.support.constraint.ConstraintLayout>
 
