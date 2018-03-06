@@ -110,6 +110,10 @@ public class UploadPostActivity extends AppCompatActivity {
 
     private void postStorage(StorageReference storageRef){
 
+        /**
+         * This pushses the photo to storage
+         */
+
         StorageMetadata storageMetadata = new StorageMetadata.Builder()
                 .setContentType("image/jpg")
                 //this won't be needed one I add
@@ -135,6 +139,10 @@ public class UploadPostActivity extends AppCompatActivity {
     }
 
     private void postDatabase(DatabaseReference postData, Post crrPost) {
+
+        /**
+         * This pushes the post data to the database
+         */
 
         postData.push().setValue(crrPost).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override

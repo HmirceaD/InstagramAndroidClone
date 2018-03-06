@@ -13,6 +13,8 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 
 public class SignUpWithEmailActivity extends AppCompatActivity {
 
@@ -21,6 +23,7 @@ public class SignUpWithEmailActivity extends AppCompatActivity {
     private EditText emailTextField;
     private EditText confEmailTextField;
     private EditText passwordTextField;
+    private EditText usernameTextField;
     private Button backButton;
     private Button signUpButton;
 
@@ -36,6 +39,7 @@ public class SignUpWithEmailActivity extends AppCompatActivity {
 
     private void setupUi() {
 
+        usernameTextField = findViewById(R.id.usernameTextField);
         emailTextField = findViewById(R.id.emailTextField);
         confEmailTextField = findViewById(R.id.confEmailTextField);
         passwordTextField = findViewById(R.id.passwordTextField);
@@ -51,16 +55,30 @@ public class SignUpWithEmailActivity extends AppCompatActivity {
 
         if((!emailTextField.getText().toString().equals("") && emailTextField.getText().length() > 6) &&
                 (!confEmailTextField.getText().toString().equals("") && confEmailTextField.getText().length() > 6) &&
-                (!passwordTextField.getText().toString().equals("") && passwordTextField.getText().length() > 6)
-                && (emailTextField.getText().toString().equals(confEmailTextField.getText().toString()))){
+                (!passwordTextField.getText().toString().equals("") && passwordTextField.getText().length() > 6) &&
+                (!usernameTextField.getText().toString().equals("") && usernameTextField.getText().length() > 6) &&
+                (emailTextField.getText().toString().equals(confEmailTextField.getText().toString()))){
 
             mAuth.createUserWithEmailAndPassword(emailTextField.getText().toString(), passwordTextField.getText().toString())
                     .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                         @Override
                         public void onSuccess(AuthResult authResult) {
 
-                            Toast.makeText(getApplicationContext(), "We good", Toast.LENGTH_SHORT).show();
-                            startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                            FirebaseUser user = mAuth.getCurrentUser();
+
+                            UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                                    .setDisplayName(usernameTextField.getText().toString()).build();
+
+                            try{
+                                user.updateProfile(profileUpdates);
+
+                                Toast.makeText(getApplicationContext(), "We good", Toast.LENGTH_SHORT).show();
+                                startActivity(new Intent(getApplicationContext(), MainActivity.class));
+
+                            }catch(NullPointerException ex){
+
+                                Toast.makeText(getApplicationContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
+                            }
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
@@ -70,11 +88,8 @@ public class SignUpWithEmailActivity extends AppCompatActivity {
                             Toast.makeText(getApplicationContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
                         }
                     });
-
         }else{
-
             Toast.makeText(this, "nope", Toast.LENGTH_SHORT).show();
         }
-
     }
 }

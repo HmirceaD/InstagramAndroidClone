@@ -27,6 +27,8 @@ import com.example.mircea.instaapp.Raw.PostListAdapter;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -45,6 +47,10 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    //Firebase Stuff
+    private FirebaseAuth mAuth;
+
+    //Ui
     private ListView postsList;
     private ArrayList<Post> posts;
     private static PostListAdapter postAdp;
@@ -78,21 +84,35 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         mainLogic();
+    }
+
+    @Override
+    public void onStart(){
+        super.onStart();
+
+        FirebaseUser crrUser = mAuth.getCurrentUser();
+
+        if(crrUser != null && userText != null)
+            userText.setText(crrUser.getDisplayName());
 
     }
 
 
     /*Handle the logic*/
     private void mainLogic() {
-
+        setupFirebase();
         setupUi();
         setupList();
+    }
+
+    private void setupFirebase() {
+
+        mAuth = FirebaseAuth.getInstance();
     }
 
     private void setupUi() {
 
         userText = findViewById(R.id.userText);
-        userText.setText("Default User");
 
         uploadButton = findViewById(R.id.uploadButton);
         uploadButton.setOnClickListener((View v) -> {
@@ -106,12 +126,10 @@ public class MainActivity extends AppCompatActivity
 
         postsList = findViewById(R.id.postLists);
 
-
         /*Populates the posts lists, main content is here*/
         //Todo(4): Add the strings to the string folder
         //Todo(6): TEST AND DOCUMENT ALL THIS !!!!!
         //Todo(7): Resize the user picture
-        //Todo(8): Must add user auth
 
         postsList = findViewById(R.id.postLists);
         posts = new ArrayList<>();
@@ -173,6 +191,12 @@ public class MainActivity extends AppCompatActivity
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
+        }
+
+        if(id == R.id.sign_out){
+
+            FirebaseAuth.getInstance().signOut();
+            startActivity(new Intent(this, LoginActivity.class));
         }
 
         return super.onOptionsItemSelected(item);
