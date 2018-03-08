@@ -66,8 +66,13 @@ public class PostListAdapter extends ArrayAdapter<Post>{
             }
 
             if(image != null){
-                //image.setImageDrawable(post.getUserImage().getDrawable());
-                image.setImageResource(R.drawable.defaultpost);
+
+                if(post.getUserImage() != null){
+                    image.setImageBitmap(post.getUserImage());
+                }else{
+                    image.setImageResource(R.drawable.defaultpost);
+                }
+
             }
 
             if(likesText != null){

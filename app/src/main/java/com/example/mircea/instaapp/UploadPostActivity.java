@@ -14,12 +14,14 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import com.example.mircea.instaapp.Raw.Metadata;
 import com.example.mircea.instaapp.Raw.Post;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
@@ -33,10 +35,8 @@ import java.util.Random;
 
 public class UploadPostActivity extends AppCompatActivity {
 
-    private Button uploadToFirebaseButton;
-    private Button backButton;
+    private FirebaseAuth mAuth;
 
-    private ImageButton imageUpload;
     private Bitmap bitmap;
     private Uri pathToImage;
 
@@ -45,6 +45,11 @@ public class UploadPostActivity extends AppCompatActivity {
 
     private static int PICK_IMAGE = 1;
     private static int SUCCESPHOTOUPDATE = 0;
+
+    //Ui
+    private Button uploadToFirebaseButton;
+    private Button backButton;
+    private ImageButton imageUpload;
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -78,9 +83,11 @@ public class UploadPostActivity extends AppCompatActivity {
 
     private void setupUi() {
 
+        mAuth = FirebaseAuth.getInstance();
+
         bitmap = null;
         pathToImage = null;
-        currentUser = getCurrentUser();
+        currentUser = mAuth.getCurrentUser().getDisplayName();
         currentTime = System.currentTimeMillis();
 
         uploadToFirebaseButton = findViewById(R.id.uploadToFirebaseButton);
@@ -98,11 +105,13 @@ public class UploadPostActivity extends AppCompatActivity {
         if(pathToImage != null && bitmap != null) {
 
             DatabaseReference postDatabase = FirebaseDatabase.getInstance().getReference("Post");
-            StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("images/" + pathToImage.getLastPathSegment());
+
+            String imageUrl = "images/" + createImageUrl(pathToImage.getLastPathSegment());
+            StorageReference storageRef = FirebaseStorage.getInstance().getReference().child(imageUrl);
 
             postStorage(storageRef);
 
-            Post post = new Post(0, 0, currentUser, currentTime);
+            Post post = new Post(0, 0, currentUser, currentTime, imageUrl);
             postDatabase(postDatabase, post);
 
         }
@@ -148,7 +157,7 @@ public class UploadPostActivity extends AppCompatActivity {
             @Override
             public void onSuccess(Void aVoid) {
 
-                if(SUCCESPHOTOUPDATE == 1){
+                if(SUCCESPHOTOUPDATE == 1 || SUCCESPHOTOUPDATE == 0){
                     Toast.makeText(getApplicationContext(), "Post uploaded succesfully", Toast.LENGTH_SHORT).show();
                     startActivity(new Intent(getApplicationContext(), MainActivity.class));
                 }else{
@@ -165,11 +174,9 @@ public class UploadPostActivity extends AppCompatActivity {
         });
     }
 
-    private String getCurrentUser(){
-        /**This will be a firebase thing, but in the mean time hardcodding this will work***/
+    private String createImageUrl(String imageUrl) throws NullPointerException{
 
-        Random rng = new Random();
-        return "defaultUser" + rng.nextInt(9999) + 1;
+        return mAuth.getCurrentUser().getEmail() + "*" + currentTime + "*" + imageUrl;
     }
 
     private void imageGalleryIntent() {

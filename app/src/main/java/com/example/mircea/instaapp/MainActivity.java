@@ -1,8 +1,12 @@
 package com.example.mircea.instaapp;
 
+import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -24,8 +28,14 @@ import android.widget.Toast;
 
 import com.example.mircea.instaapp.Raw.Post;
 import com.example.mircea.instaapp.Raw.PostListAdapter;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.TaskCompletionSource;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -50,6 +60,8 @@ public class MainActivity extends AppCompatActivity
     //Firebase Stuff
     private FirebaseAuth mAuth;
 
+    private Uri tempUri;
+
     //Ui
     private ListView postsList;
     private ArrayList<Post> posts;
@@ -62,6 +74,14 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        setupDrawer();
+
+        mainLogic();
+    }
+
+    private void setupDrawer() {
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -82,8 +102,6 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
-        mainLogic();
     }
 
     @Override
@@ -100,6 +118,7 @@ public class MainActivity extends AppCompatActivity
 
     /*Handle the logic*/
     private void mainLogic() {
+
         setupFirebase();
         setupUi();
         setupList();
@@ -143,6 +162,8 @@ public class MainActivity extends AppCompatActivity
 
     public void populateLists(){
 
+        /*initialize all the posts that the user will see*/
+
         DatabaseReference database = FirebaseDatabase.getInstance().getReference("Post");
 
         database.addValueEventListener(new ValueEventListener() {
@@ -152,16 +173,56 @@ public class MainActivity extends AppCompatActivity
                 postAdp = new PostListAdapter(posts, getApplicationContext());
 
                 for(DataSnapshot data: dataSnapshot.getChildren()){
+                    /*this is where the magic happens*/
 
                     Post p = data.getValue(Post.class);
-                    posts.add(p);
-                    postsList.setAdapter(postAdp);
+
+                    StorageReference storageReference = FirebaseStorage.getInstance().getReference(p.getImageUrl());
+
+                    final long ONE_MEGABYTE = 1024*1024;
+                    storageReference.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                        @Override
+                        public void onSuccess(byte[] bytes) {
+
+                            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+
+                            p.setUserImage(bitmap);
+
+                            posts.add(p);
+                            postsList.setAdapter(postAdp);
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+
+                        }
+                    });
+
                 }
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {}
         });
+    }
+
+    private Uri getUserImage(String imageUrl) {
+        /**
+         * returns the main image of the post
+         */
+
+
+        return tempUri;
+    }
+
+    @Override
+    protected void onDestroy() {
+
+        try {
+            super.onDestroy(); // I use try catch and it dosen't crash any more
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

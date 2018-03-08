@@ -1,5 +1,7 @@
 package com.example.mircea.instaapp.Raw;
 
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.widget.ImageView;
 
 import java.time.LocalDateTime;
@@ -9,20 +11,24 @@ public class Post {
 
     private String username;
     private ImageView userProfilePicture;
-    private ImageView userImage;
+    private Bitmap userImage;
     private int likes;
     private int comments;
     private long dateTime;
+    private String imageUrl;
 
     public Post(){}
 
-    public Post(int c, int l, String u, long lt){
+    public Post(int c, int l, String u, long lt, String iUrl){
 
+        this.imageUrl = iUrl;
         this.dateTime = lt;
         this.username = u;
         this.likes = l;
         this.comments = c;
     }
+
+    public String getImageUrl() {return imageUrl;}
 
     public long getLocalDateTime() { return dateTime;}
 
@@ -34,7 +40,7 @@ public class Post {
         return userProfilePicture;
     }
 
-    public ImageView getUserImage() {
+    public Bitmap getUserImage() {
         return userImage;
     }
 
@@ -45,4 +51,6 @@ public class Post {
     public int getComments() {
         return comments;
     }
+
+    public void setUserImage(Bitmap userImage) {this.userImage = userImage;}
 }
