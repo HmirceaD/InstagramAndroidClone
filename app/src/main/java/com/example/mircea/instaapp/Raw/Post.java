@@ -10,23 +10,30 @@ import java.util.List;
 public class Post {
 
     private String username;
-    private ImageView userProfilePicture;
+    private Bitmap userProfilePicture;
     private Bitmap userImage;
     private int likes;
     private int comments;
     private long dateTime;
     private String imageUrl;
+    private String userImageUri;
+
 
     public Post(){}
 
-    public Post(int c, int l, String u, long lt, String iUrl){
+    public Post(int c, int l, String u, long lt, String iUrl, String userProf){
 
+        this.userImageUri = userProf;
         this.imageUrl = iUrl;
         this.dateTime = lt;
         this.username = u;
         this.likes = l;
         this.comments = c;
     }
+
+    public String getUserImageUri() {return userImageUri;}
+
+    public void setUserProfilePicture(Bitmap userProfilePicture) {this.userProfilePicture = userProfilePicture;}
 
     public String getImageUrl() {return imageUrl;}
 
@@ -36,7 +43,7 @@ public class Post {
         return username;
     }
 
-    public ImageView getUserProfilePicture() {
+    public Bitmap getUserProfilePicture() {
         return userProfilePicture;
     }
 

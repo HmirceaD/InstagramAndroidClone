@@ -57,8 +57,15 @@ public class PostListAdapter extends ArrayAdapter<Post>{
             ImageView shareButton = postView.findViewById(R.id.shareButton);
 
             if(userProfPic != null){
-                //userProfPic.setImageDrawable(post.getUserProfilePicture().getDrawable());
-                userProfPic.setImageResource(R.drawable.instagram_default);
+                /*Set the Profile picture*/
+                if(post.getUserProfilePicture() != null){
+
+                    userProfPic.setImageBitmap(post.getUserProfilePicture());
+
+                }else{
+
+                    userProfPic.setImageResource(R.drawable.instagram_default2);
+                }
             }
 
             if(username != null){
@@ -66,7 +73,7 @@ public class PostListAdapter extends ArrayAdapter<Post>{
             }
 
             if(image != null){
-
+                /*Set the main post picture*/
                 if(post.getUserImage() != null){
                     image.setImageBitmap(post.getUserImage());
                 }else{

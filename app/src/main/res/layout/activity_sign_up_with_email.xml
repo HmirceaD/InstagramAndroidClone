@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="52dp"
+        android:layout_marginTop="27dp"
         android:ems="10"
         android:inputType="textPersonName"
         app:layout_constraintEnd_toStartOf="@+id/confEmailLabel"
@@ -26,7 +26,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="52dp"
+        android:layout_marginTop="27dp"
         android:ems="10"
         android:inputType="textPassword"
         app:layout_constraintEnd_toStartOf="@+id/passLabel"
@@ -39,20 +39,20 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
-        android:layout_marginTop="74dp"
+        android:layout_marginTop="28dp"
         android:text="Sign Up"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/passwordTextField" />
+        app:layout_constraintTop_toBottomOf="@+id/profilePicture" />
 
     <Button
         android:id="@+id/backButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="74dp"
+        android:layout_marginTop="28dp"
         android:text="Back"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/passwordTextField" />
+        app:layout_constraintTop_toBottomOf="@+id/profilePicture" />
 
     <EditText
         android:id="@+id/emailTextField"
@@ -60,20 +60,20 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="52dp"
+        android:layout_marginTop="27dp"
         android:ems="10"
         android:inputType="textPersonName"
-        app:layout_constraintEnd_toStartOf="@+id/emailLabel"
+        app:layout_constraintEnd_toStartOf="@+id/emailLable"
         app:layout_constraintHorizontal_bias="0.163"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/usernameTextField" />
 
     <TextView
-        android:id="@+id/emailLabel"
+        android:id="@+id/emailLable"
         android:layout_width="75dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="40dp"
-        android:layout_marginTop="80dp"
+        android:layout_marginEnd="28dp"
+        android:layout_marginTop="47dp"
         android:text="Email"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/usernameLabel" />
@@ -82,18 +82,18 @@
         android:id="@+id/confEmailLabel"
         android:layout_width="75dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="40dp"
-        android:layout_marginTop="80dp"
+        android:layout_marginEnd="28dp"
+        android:layout_marginTop="54dp"
         android:text="Conf. Email"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/emailLabel" />
+        app:layout_constraintTop_toBottomOf="@+id/emailLable" />
 
     <TextView
         android:id="@+id/passLabel"
         android:layout_width="75dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="40dp"
-        android:layout_marginTop="80dp"
+        android:layout_marginEnd="28dp"
+        android:layout_marginTop="61dp"
         android:text="Password"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/confEmailLabel" />
@@ -104,7 +104,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="27dp"
         android:ems="10"
         android:inputType="textPersonName"
         app:layout_constraintEnd_toStartOf="@+id/usernameLabel"
@@ -116,9 +116,30 @@
         android:id="@+id/usernameLabel"
         android:layout_width="75dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="40dp"
-        android:layout_marginTop="44dp"
+        android:layout_marginEnd="28dp"
+        android:layout_marginTop="40dp"
         android:text="Username"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
+        android:id="@+id/profilePicture"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginEnd="40dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintEnd_toStartOf="@+id/photoLable"
+        app:layout_constraintTop_toBottomOf="@+id/passwordTextField"
+        app:srcCompat="@drawable/ic_launcher_background" />
+
+    <TextView
+        android:id="@+id/photoLable"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="84dp"
+        android:layout_marginTop="64dp"
+        android:text="Select a profile picture"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/passwordTextField" />
+
 </android.support.constraint.ConstraintLayout>

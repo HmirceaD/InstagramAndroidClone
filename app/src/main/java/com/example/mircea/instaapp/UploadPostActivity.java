@@ -2,6 +2,7 @@ package com.example.mircea.instaapp;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -29,7 +30,9 @@ import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.Random;
 
@@ -40,8 +43,10 @@ public class UploadPostActivity extends AppCompatActivity {
     private Bitmap bitmap;
     private Uri pathToImage;
 
+    //Post info
     private static String currentUser;
     private static long currentTime;
+    private String profilePictureUri;
 
     private static int PICK_IMAGE = 1;
     private static int SUCCESPHOTOUPDATE = 0;
@@ -90,6 +95,9 @@ public class UploadPostActivity extends AppCompatActivity {
         currentUser = mAuth.getCurrentUser().getDisplayName();
         currentTime = System.currentTimeMillis();
 
+        profilePictureUri = mAuth.getCurrentUser().getPhotoUrl().toString();
+        Log.d("TAAA", profilePictureUri);
+
         uploadToFirebaseButton = findViewById(R.id.uploadToFirebaseButton);
         backButton = findViewById(R.id.backButton);
         imageUpload = findViewById(R.id.imageUpload);
@@ -111,7 +119,7 @@ public class UploadPostActivity extends AppCompatActivity {
 
             postStorage(storageRef);
 
-            Post post = new Post(0, 0, currentUser, currentTime, imageUrl);
+            Post post = new Post(0, 0, currentUser, currentTime, imageUrl, profilePictureUri);
             postDatabase(postDatabase, post);
 
         }

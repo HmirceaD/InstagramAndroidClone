@@ -48,9 +48,11 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
@@ -173,46 +175,74 @@ public class MainActivity extends AppCompatActivity
                 postAdp = new PostListAdapter(posts, getApplicationContext());
 
                 for(DataSnapshot data: dataSnapshot.getChildren()){
-                    /*this is where the magic happens*/
+                    /*get the data for the post*/
 
                     Post p = data.getValue(Post.class);
-
-                    StorageReference storageReference = FirebaseStorage.getInstance().getReference(p.getImageUrl());
-
-                    final long ONE_MEGABYTE = 1024*1024;
-                    storageReference.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-                        @Override
-                        public void onSuccess(byte[] bytes) {
-
-                            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-
-                            p.setUserImage(bitmap);
-
-                            posts.add(p);
-                            postsList.setAdapter(postAdp);
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-
-                        }
-                    });
-
+                    /*get main post image*/
+                    getPostImage(p, posts, postsList);
                 }
             }
-
             @Override
             public void onCancelled(DatabaseError databaseError) {}
         });
     }
 
-    private Uri getUserImage(String imageUrl) {
-        /**
-         * returns the main image of the post
-         */
+    private void getPostImage(Post p, ArrayList<Post> posts, ListView postsList) {
+
+        StorageReference storageReference = FirebaseStorage.getInstance().getReference(p.getImageUrl());
+
+        final long ONE_MEGABYTE = 1024*1024;
+        storageReference.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+            @Override
+            public void onSuccess(byte[] bytes) {
+
+                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+
+                p.setUserImage(bitmap);
+                //get the profile picture
+                p.setUserProfilePicture(bitmap);
+
+                //set the profile picture
+                Uri uri = Uri.parse(p.getUserImageUri());
+
+                getUserProfilePicture(p, posts, postsList);
 
 
-        return tempUri;
+
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+
+            }
+        });
+    }
+
+    private void getUserProfilePicture(Post p, ArrayList<Post> posts, ListView postsList) {
+
+        Log.i("TAA", p.getUserImageUri());
+
+        StorageReference storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(p.getUserImageUri());
+
+        final long ONE_MEGABYTE = 1024 * 1024;
+        storageReference.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+            @Override
+            public void onSuccess(byte[] bytes) {
+
+                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+
+                p.setUserProfilePicture(bitmap);
+
+                posts.add(p);
+                postsList.setAdapter(postAdp);
+
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+
+            }
+        });
     }
 
     @Override
