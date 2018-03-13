@@ -20,6 +20,8 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
+import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.storage.FirebaseStorage;
@@ -40,6 +42,8 @@ public class SignUpWithEmailActivity extends AppCompatActivity {
     private Bitmap imageBitmap;
     private Uri pathToImage;
     private static int PICK_IMAGE = 1;
+
+    private static final String TAG = "TAG MESSAGE";
 
     //Ui
     private EditText emailTextField;
@@ -117,12 +121,35 @@ public class SignUpWithEmailActivity extends AppCompatActivity {
     }
 
     private void checkLogin() {
+        try {
+            if (usernameTextField.getText().toString().equals("") || usernameTextField.getText().length() < 6) {
+                Toast.makeText(this, "Username must be atleast 6 characters long", Toast.LENGTH_SHORT).show();
+                clearTextFields(usernameTextField);
+                return;
+            }
 
-        if((!emailTextField.getText().toString().equals("") && emailTextField.getText().length() > 6) &&
-                (!confEmailTextField.getText().toString().equals("") && confEmailTextField.getText().length() > 6) &&
-                (!passwordTextField.getText().toString().equals("") && passwordTextField.getText().length() > 6) &&
-                (!usernameTextField.getText().toString().equals("") && usernameTextField.getText().length() > 6) &&
-                (emailTextField.getText().toString().equals(confEmailTextField.getText().toString()))){
+            if (emailTextField.getText().toString().equals("") || emailTextField.getText().length() < 6) {
+                Toast.makeText(this, "Email must be valid", Toast.LENGTH_SHORT).show();
+                clearTextFields(emailTextField, confEmailTextField);
+                return;
+            }
+
+            if (!emailTextField.getText().toString().equals(confEmailTextField.getText().toString())) {
+                Toast.makeText(this, "Emails must match", Toast.LENGTH_SHORT).show();
+                clearTextFields(confEmailTextField);
+                return;
+            }
+
+            if ((passwordTextField.getText().toString().equals("") || passwordTextField.getText().length() < 6)) {
+                Toast.makeText(this, "Password must be at least 6 characters long", Toast.LENGTH_SHORT).show();
+                clearTextFields(passwordTextField);
+                return;
+            }
+
+        }catch (NullPointerException ex){
+
+            Toast.makeText(this, "Please fill out all the forms", Toast.LENGTH_SHORT).show();
+        }
 
             mAuth.createUserWithEmailAndPassword(emailTextField.getText().toString(), passwordTextField.getText().toString())
                     .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
@@ -131,55 +158,91 @@ public class SignUpWithEmailActivity extends AppCompatActivity {
 
                             FirebaseUser user = mAuth.getCurrentUser();
 
-                            String imageUrl = null;
+                            UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                                    .setDisplayName(usernameTextField.getText().toString())
+                                    .build();
 
-                            if(imageBitmap == null || pathToImage == null){
-                                imageUrl = createDefaultImage();
+                            user.updateProfile(profileUpdates);
 
-                            }else{
+
+                            if(imageBitmap != null && pathToImage != null){
+                                String imageUrl = null;
+
                                 imageUrl = getImageUrl(emailTextField.getText().toString());
+
+                                StorageReference storageReference = FirebaseStorage.getInstance().getReference("ProfilePictures").child(imageUrl);
+
+                                UploadTask uploadTask = storageReference.putFile(pathToImage);
+                                Log.i("TAGIIIIIII", pathToImage.toString());
+
+                                try{
+
+                                    uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                                        @Override
+                                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
+                                            FirebaseUser usez = mAuth.getCurrentUser();
+
+                                            UserProfileChangeRequest profileUpdatez = new UserProfileChangeRequest.Builder()
+                                                    .setDisplayName(usernameTextField.getText().toString())
+                                                    .setPhotoUri(taskSnapshot.getDownloadUrl())
+                                                    .build();
+
+                                            usez.updateProfile(profileUpdatez);
+                                        }
+                                    }).addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+
+                                            e.printStackTrace();
+                                        }
+                                    });
+
+                                }catch(NullPointerException ex){
+                                    ex.printStackTrace();
+                                    clearTextFields(emailTextField, confEmailTextField, passwordTextField, usernameTextField);
+
+                                    Toast.makeText(getApplicationContext(), "Something went wrong, please try again", Toast.LENGTH_SHORT).show();
+                                }
                             }
 
-                            StorageReference storageReference = FirebaseStorage.getInstance().getReference("ProfilePictures").child(imageUrl);
-
-                            UploadTask uploadTask = storageReference.putFile(pathToImage);
-                            try{
-
-                                uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                                    @Override
-                                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-
-                                        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                                                .setDisplayName(usernameTextField.getText().toString())
-                                                .setPhotoUri(taskSnapshot.getDownloadUrl())
-                                                .build();
-
-                                            user.updateProfile(profileUpdates);
-                                    }
-                                });
-
-
-                                Toast.makeText(getApplicationContext(), "We good", Toast.LENGTH_SHORT).show();
-                                startActivity(new Intent(getApplicationContext(), MainActivity.class));
-
-                            }catch(NullPointerException ex){
-                                ex.printStackTrace();
-                                Toast.makeText(getApplicationContext(), "Something went wrong1", Toast.LENGTH_SHORT).show();
-                            }
+                            startActivity(new Intent(getApplicationContext(), MainActivity.class));
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
                         @Override
                          public void onFailure(@NonNull Exception e) {
 
-                            Toast.makeText(getApplicationContext(), "Something went wron2g", Toast.LENGTH_SHORT).show();
+                                /*catch all the possible exceptions*/
+                                //TODO(1): This needs more work
+                            try{
+
+                                throw e;
+
+                            }catch (FirebaseAuthWeakPasswordException ex){
+                                Toast.makeText(getApplicationContext(), "The password you chose is to weak, please try again", Toast.LENGTH_SHORT).show();
+
+                            }catch (FirebaseAuthUserCollisionException ex){
+
+                                Toast.makeText(getApplicationContext(), "Account already in use", Toast.LENGTH_SHORT).show();
+
+                            }catch (Exception ex){
+                                Log.i(TAG, ex.getMessage());
+                            }
                         }
                     });
-        }else{
-            Toast.makeText(this, "nope", Toast.LENGTH_SHORT).show();
-        }
+
     }
 
+    public void clearTextFields(EditText... textFields){
+
+        for(EditText aux:textFields){
+            aux.setText("");
+        }
+
+    }
+
+    @NonNull
     private String createDefaultImage() {
 
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.instagram_default2);
@@ -202,12 +265,13 @@ public class SignUpWithEmailActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        pathToImage = Uri.parse(file.getPath());
+        Log.d("TAGGGGGGGGTGG", file.getPath());
 
         return "defaultProfilePicture.jpg";
 
     }
 
+    @NonNull
     private String getImageUrl(String em) {
 
         return em + "*" + pathToImage.getLastPathSegment();

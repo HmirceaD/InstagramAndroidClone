@@ -110,11 +110,15 @@ public class MainActivity extends AppCompatActivity
     public void onStart(){
         super.onStart();
 
-        FirebaseUser crrUser = mAuth.getCurrentUser();
+        /*FirebaseUser crrUser = mAuth.getCurrentUser();
 
-        if(crrUser != null && userText != null)
+        try {
             userText.setText(crrUser.getDisplayName());
+        }catch (NullPointerException ex){
 
+            ex.printStackTrace();
+            userText.setText("DEFAULT");
+        }*/
     }
 
 
@@ -128,12 +132,26 @@ public class MainActivity extends AppCompatActivity
 
     private void setupFirebase() {
 
-        mAuth = FirebaseAuth.getInstance();
+
     }
 
     private void setupUi() {
 
         userText = findViewById(R.id.userText);
+
+        mAuth = FirebaseAuth.getInstance();
+
+        FirebaseUser crrUser = mAuth.getCurrentUser();
+
+        Log.d("TAAAAAAAAAA", crrUser.getDisplayName() + " DASDSAD");
+
+        try {
+            userText.setText(crrUser.getDisplayName());
+        }catch (NullPointerException ex){
+
+            ex.printStackTrace();
+            userText.setText("DEFAULT");
+        }
 
         uploadButton = findViewById(R.id.uploadButton);
         uploadButton.setOnClickListener((View v) -> {
@@ -191,7 +209,7 @@ public class MainActivity extends AppCompatActivity
 
         StorageReference storageReference = FirebaseStorage.getInstance().getReference(p.getImageUrl());
 
-        final long ONE_MEGABYTE = 1024*1024;
+        final long ONE_MEGABYTE = 1024*1024 *5;
         storageReference.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
             @Override
             public void onSuccess(byte[] bytes) {
@@ -215,27 +233,37 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void getUserProfilePicture(Post p, ArrayList<Post> posts, ListView postsList) {
-        StorageReference storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(p.getUserImageUri());
+        if(p.getUserImageUri() != null){
+            StorageReference storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(p.getUserImageUri());
 
-        final long ONE_MEGABYTE = 1024 * 1024;
-        storageReference.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-            @Override
-            public void onSuccess(byte[] bytes) {
+            final long ONE_MEGABYTE = 1024 * 1024*5;
+            storageReference.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                @Override
+                public void onSuccess(byte[] bytes) {
 
-                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
 
-                p.setUserProfilePicture(bitmap);
+                    p.setUserProfilePicture(bitmap);
 
-                posts.add(p);
-                postsList.setAdapter(postAdp);
+                    posts.add(p);
+                    postsList.setAdapter(postAdp);
 
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
 
-            }
-        });
+                }
+            });
+
+        }else{
+
+            p.setUserProfilePicture(null);
+
+            posts.add(p);
+            postsList.setAdapter(postAdp);
+        }
+
     }
 
     @Override

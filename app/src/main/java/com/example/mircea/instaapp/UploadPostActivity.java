@@ -95,8 +95,13 @@ public class UploadPostActivity extends AppCompatActivity {
         currentUser = mAuth.getCurrentUser().getDisplayName();
         currentTime = System.currentTimeMillis();
 
-        profilePictureUri = mAuth.getCurrentUser().getPhotoUrl().toString();
-        Log.d("TAAA", profilePictureUri);
+        if(mAuth.getCurrentUser().getPhotoUrl() != null){
+
+            profilePictureUri = mAuth.getCurrentUser().getPhotoUrl().toString();
+        }else{
+
+            profilePictureUri = null;
+        }
 
         uploadToFirebaseButton = findViewById(R.id.uploadToFirebaseButton);
         backButton = findViewById(R.id.backButton);
