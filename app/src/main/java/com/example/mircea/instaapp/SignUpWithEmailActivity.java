@@ -2,11 +2,14 @@ package com.example.mircea.instaapp;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -23,6 +26,9 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 public class SignUpWithEmailActivity extends AppCompatActivity {
@@ -34,7 +40,6 @@ public class SignUpWithEmailActivity extends AppCompatActivity {
     private Bitmap imageBitmap;
     private Uri pathToImage;
     private static int PICK_IMAGE = 1;
-    private UserProfileChangeRequest profileUpdates;
 
     //Ui
     private EditText emailTextField;
@@ -126,41 +131,40 @@ public class SignUpWithEmailActivity extends AppCompatActivity {
 
                             FirebaseUser user = mAuth.getCurrentUser();
 
+                            String imageUrl = null;
 
                             if(imageBitmap == null || pathToImage == null){
+                                imageUrl = createDefaultImage();
 
-                                 profileUpdates = new UserProfileChangeRequest.Builder()
-                                        .setDisplayName(usernameTextField.getText().toString())
-                                        .build();
                             }else{
+                                imageUrl = getImageUrl(emailTextField.getText().toString());
+                            }
 
-                                String imageUrl = getImageUrl(emailTextField.getText().toString());
+                            StorageReference storageReference = FirebaseStorage.getInstance().getReference("ProfilePictures").child(imageUrl);
 
-                                StorageReference storageReference = FirebaseStorage.getInstance().getReference("ProfilePictures").child(imageUrl);
-
-                                UploadTask uploadTask = storageReference.putFile(pathToImage);
+                            UploadTask uploadTask = storageReference.putFile(pathToImage);
+                            try{
 
                                 uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                                     @Override
                                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
 
-                                        profileUpdates = new UserProfileChangeRequest.Builder()
+                                        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
                                                 .setDisplayName(usernameTextField.getText().toString())
                                                 .setPhotoUri(taskSnapshot.getDownloadUrl())
                                                 .build();
+
+                                            user.updateProfile(profileUpdates);
                                     }
                                 });
-                            }
 
-                            try{
-                                user.updateProfile(profileUpdates);
 
                                 Toast.makeText(getApplicationContext(), "We good", Toast.LENGTH_SHORT).show();
                                 startActivity(new Intent(getApplicationContext(), MainActivity.class));
 
                             }catch(NullPointerException ex){
-
-                                Toast.makeText(getApplicationContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
+                                ex.printStackTrace();
+                                Toast.makeText(getApplicationContext(), "Something went wrong1", Toast.LENGTH_SHORT).show();
                             }
                         }
                     })
@@ -168,12 +172,40 @@ public class SignUpWithEmailActivity extends AppCompatActivity {
                         @Override
                          public void onFailure(@NonNull Exception e) {
 
-                            Toast.makeText(getApplicationContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(), "Something went wron2g", Toast.LENGTH_SHORT).show();
                         }
                     });
         }else{
             Toast.makeText(this, "nope", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private String createDefaultImage() {
+
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.instagram_default2);
+
+        String extStorageDirectory = Environment.getExternalStorageDirectory().toString();
+
+        File file = new File(extStorageDirectory, "defaultProfilePicture.jpg");
+        FileOutputStream outStream = null;
+
+        try {
+            outStream = new FileOutputStream(file);
+
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outStream);
+            outStream.flush();
+            outStream.close();
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        pathToImage = Uri.parse(file.getPath());
+
+        return "defaultProfilePicture.jpg";
+
     }
 
     private String getImageUrl(String em) {

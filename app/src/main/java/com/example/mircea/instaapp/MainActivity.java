@@ -203,11 +203,7 @@ public class MainActivity extends AppCompatActivity
                 p.setUserProfilePicture(bitmap);
 
                 //set the profile picture
-                Uri uri = Uri.parse(p.getUserImageUri());
-
                 getUserProfilePicture(p, posts, postsList);
-
-
 
             }
         }).addOnFailureListener(new OnFailureListener() {
@@ -219,9 +215,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void getUserProfilePicture(Post p, ArrayList<Post> posts, ListView postsList) {
-
-        Log.i("TAA", p.getUserImageUri());
-
         StorageReference storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(p.getUserImageUri());
 
         final long ONE_MEGABYTE = 1024 * 1024;
@@ -249,7 +242,7 @@ public class MainActivity extends AppCompatActivity
     protected void onDestroy() {
 
         try {
-            super.onDestroy(); // I use try catch and it dosen't crash any more
+            super.onDestroy(); // I use try catch and it doesn't crash any more
         } catch (Exception e) {
             e.printStackTrace();
         }
