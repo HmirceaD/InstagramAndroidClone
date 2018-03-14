@@ -106,33 +106,11 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
     }
 
-    @Override
-    public void onStart(){
-        super.onStart();
-
-        /*FirebaseUser crrUser = mAuth.getCurrentUser();
-
-        try {
-            userText.setText(crrUser.getDisplayName());
-        }catch (NullPointerException ex){
-
-            ex.printStackTrace();
-            userText.setText("DEFAULT");
-        }*/
-    }
-
-
     /*Handle the logic*/
     private void mainLogic() {
 
-        setupFirebase();
         setupUi();
         setupList();
-    }
-
-    private void setupFirebase() {
-
-
     }
 
     private void setupUi() {
@@ -142,8 +120,6 @@ public class MainActivity extends AppCompatActivity
         mAuth = FirebaseAuth.getInstance();
 
         FirebaseUser crrUser = mAuth.getCurrentUser();
-
-        Log.d("TAAAAAAAAAA", crrUser.getDisplayName() + " DASDSAD");
 
         try {
             userText.setText(crrUser.getDisplayName());
@@ -171,11 +147,14 @@ public class MainActivity extends AppCompatActivity
         //Todo(7): Resize the user picture
 
         postsList = findViewById(R.id.postLists);
+
         posts = new ArrayList<>();
 
         populateLists();
 
         postAdp = new PostListAdapter(posts, getApplicationContext());
+
+
         postsList.setAdapter(postAdp);
 
     }
@@ -257,7 +236,7 @@ public class MainActivity extends AppCompatActivity
             });
 
         }else{
-
+            /*no profile picture found*/
             p.setUserProfilePicture(null);
 
             posts.add(p);

@@ -1,25 +1,43 @@
 package com.example.mircea.instaapp.Raw;
 
 import android.content.Context;
+import android.content.Intent;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.mircea.instaapp.R;
+import com.example.mircea.instaapp.UserProfileActivity;
+
 
 import java.util.ArrayList;
 
+import static android.support.v4.content.ContextCompat.startActivity;
+
 public class PostListAdapter extends ArrayAdapter<Post>{
 
-    //Todo(7) Refactor this to work for images from the db
-
+    //Array adapter
     private ArrayList<Post> postList;
     private Context mContext;
+    private Post post;
+
+    //Logic
+    private boolean  doubleClick = false;
+    private Handler doubleHandler;
+    private boolean isLike = true;
+
+    //Ui
+    private ImageView likeButton;
+    private TextView commentsText;
 
     public PostListAdapter(ArrayList<Post> p, Context c){
         super(c, R.layout.insta_post, p);
@@ -42,17 +60,21 @@ public class PostListAdapter extends ArrayAdapter<Post>{
             postView = lI.inflate(R.layout.insta_post, null);
         }
 
-        Post post = getItem(position);
+        post = getItem(position);
 
         if(post != null){
 
             ImageView userProfPic = postView.findViewById(R.id.postUserPicture);
+
+            userProfPic.setOnClickListener(new MainImageClickListener());
             TextView username = postView.findViewById(R.id.postUsername);
             ImageView image = postView.findViewById(R.id.postImage);
-            TextView likesText = postView.findViewById(R.id.noLikesText);
-            TextView commentsText = postView.findViewById(R.id.commentsText);
 
-            ImageView likeButton = postView.findViewById(R.id.likeButton);
+            /*handle main image double clicks*/
+            TextView likesText = postView.findViewById(R.id.noLikesText);
+            commentsText = postView.findViewById(R.id.commentsText);
+
+            likeButton = postView.findViewById(R.id.likeButton);
             ImageView commentsButton = postView.findViewById(R.id.commentButton);
             ImageView shareButton = postView.findViewById(R.id.shareButton);
 
@@ -91,7 +113,7 @@ public class PostListAdapter extends ArrayAdapter<Post>{
             }
 
             if(likeButton != null){
-                likeButton.setImageResource(R.drawable.likebutton);
+                likeButton.setImageResource(R.drawable.whiteheart);
             }
 
             if(commentsButton != null){
@@ -122,5 +144,17 @@ public class PostListAdapter extends ArrayAdapter<Post>{
     @Override
     public int getPosition(@Nullable Post item) {
         return super.getPosition(item);
+    }
+
+
+    private class MainImageClickListener implements View.OnClickListener {
+        //double click framework
+
+        @Override
+        public void onClick(View view) {
+            Intent it = new Intent(mContext, UserProfileActivity.class);
+            mContext.startActivity(it);
+
+        }
     }
 }

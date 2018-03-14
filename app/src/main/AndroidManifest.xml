@@ -3,7 +3,7 @@
     package="com.example.mircea.instaapp">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
@@ -25,7 +25,8 @@
             android:label="@string/title_activity_main"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".UploadPostActivity" />
-        <activity android:name=".SignUpWithEmailActivity"></activity>
+        <activity android:name=".SignUpWithEmailActivity" />
+        <activity android:name=".UserProfileActivity"></activity>
     </application>
 
 </manifest>
