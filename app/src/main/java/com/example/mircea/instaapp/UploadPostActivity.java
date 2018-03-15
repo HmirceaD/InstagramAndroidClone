@@ -15,16 +15,21 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import com.example.mircea.instaapp.Raw.EmailRefactor;
 import com.example.mircea.instaapp.Raw.Metadata;
 import com.example.mircea.instaapp.Raw.Post;
+import com.example.mircea.instaapp.Raw.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
@@ -34,6 +39,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 public class UploadPostActivity extends AppCompatActivity {
@@ -117,6 +124,8 @@ public class UploadPostActivity extends AppCompatActivity {
 
         if(pathToImage != null && bitmap != null) {
 
+            EmailRefactor emRef = new EmailRefactor();
+
             DatabaseReference postDatabase = FirebaseDatabase.getInstance().getReference("Post");
 
             String imageUrl = "images/" + createImageUrl(pathToImage.getLastPathSegment());
@@ -124,7 +133,9 @@ public class UploadPostActivity extends AppCompatActivity {
 
             postStorage(storageRef);
 
-            Post post = new Post(0, 0, currentUser, currentTime, imageUrl, profilePictureUri);
+            String currentEmail = mAuth.getCurrentUser().getEmail();
+
+            Post post = new Post(0, 0, currentUser, currentEmail, currentTime, imageUrl, profilePictureUri);
             postDatabase(postDatabase, post);
 
         }
@@ -166,6 +177,10 @@ public class UploadPostActivity extends AppCompatActivity {
          * This pushes the post data to the database
          */
 
+        //Get the id
+        String postId = postData.push().getKey();
+
+        //push the post to the post database
         postData.push().setValue(crrPost).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
@@ -185,6 +200,31 @@ public class UploadPostActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "Something went wrong, please try again", Toast.LENGTH_LONG).show();
             }
         });
+
+        //add to the users database
+
+        EmailRefactor emailRefactor = new EmailRefactor();
+
+        String reference = "Users/" + emailRefactor.refactorEmail(mAuth.getCurrentUser().getEmail()) + "/Posts";
+
+        DatabaseReference usersDatabase = FirebaseDatabase.getInstance().getReference(reference);
+
+        Map<String, Object> idUpdate = new HashMap<>();
+
+        idUpdate.put("postId", postId);
+
+        usersDatabase.updateChildren(idUpdate).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+
+                if(task.isSuccessful()){
+
+                    Log.d("USER UPDATE", "SUCCES");
+                }
+            }
+        });
+
+
     }
 
     private String createImageUrl(String imageUrl) throws NullPointerException{

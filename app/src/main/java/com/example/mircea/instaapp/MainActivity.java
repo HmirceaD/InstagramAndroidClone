@@ -28,6 +28,7 @@ import android.widget.Toast;
 
 import com.example.mircea.instaapp.Raw.Post;
 import com.example.mircea.instaapp.Raw.PostListAdapter;
+import com.example.mircea.instaapp.Raw.User;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -68,6 +69,8 @@ public class MainActivity extends AppCompatActivity
     private ListView postsList;
     private ArrayList<Post> posts;
     private static PostListAdapter postAdp;
+
+    private ArrayList<User> users;
 
     private TextView userText;
     private Button uploadButton;
@@ -149,6 +152,7 @@ public class MainActivity extends AppCompatActivity
         postsList = findViewById(R.id.postLists);
 
         posts = new ArrayList<>();
+        users = new ArrayList<>();
 
         populateLists();
 
@@ -172,10 +176,10 @@ public class MainActivity extends AppCompatActivity
                 postAdp = new PostListAdapter(posts, getApplicationContext());
 
                 for(DataSnapshot data: dataSnapshot.getChildren()){
-                    /*get the data for the post*/
+                    //get the data for the post
 
                     Post p = data.getValue(Post.class);
-                    /*get main post image*/
+                    //get main post image
                     getPostImage(p, posts, postsList);
                 }
             }
@@ -198,7 +202,6 @@ public class MainActivity extends AppCompatActivity
                 p.setUserImage(bitmap);
                 //get the profile picture
                 p.setUserProfilePicture(bitmap);
-
                 //set the profile picture
                 getUserProfilePicture(p, posts, postsList);
 
@@ -223,7 +226,6 @@ public class MainActivity extends AppCompatActivity
                     Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
 
                     p.setUserProfilePicture(bitmap);
-
                     posts.add(p);
                     postsList.setAdapter(postAdp);
 
@@ -238,7 +240,6 @@ public class MainActivity extends AppCompatActivity
         }else{
             /*no profile picture found*/
             p.setUserProfilePicture(null);
-
             posts.add(p);
             postsList.setAdapter(postAdp);
         }

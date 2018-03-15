@@ -129,7 +129,6 @@ public class PostListAdapter extends ArrayAdapter<Post>{
 
     }
 
-
     @Override
     public int getCount() {
         return super.getCount();
@@ -152,7 +151,9 @@ public class PostListAdapter extends ArrayAdapter<Post>{
 
         @Override
         public void onClick(View view) {
+
             Intent it = new Intent(mContext, UserProfileActivity.class);
+            it.putExtra("Email", post.getEmail());
             mContext.startActivity(it);
 
         }

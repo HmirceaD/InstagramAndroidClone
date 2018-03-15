@@ -16,14 +16,20 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import com.example.mircea.instaapp.Raw.EmailRefactor;
+import com.example.mircea.instaapp.Raw.User;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -44,6 +50,9 @@ public class SignUpWithEmailActivity extends AppCompatActivity {
     private static int PICK_IMAGE = 1;
 
     private static final String TAG = "TAG MESSAGE";
+
+    private String userPhotoUrl;
+    private User temp_user;
 
     //Ui
     private EditText emailTextField;
@@ -164,6 +173,13 @@ public class SignUpWithEmailActivity extends AppCompatActivity {
 
                             user.updateProfile(profileUpdates);
 
+                            userPhotoUrl = null;
+
+                            EmailRefactor emRef = new EmailRefactor();
+
+                            String email = emRef.refactorEmail(emailTextField.getText().toString());
+
+                            temp_user = new User(email, usernameTextField.getText().toString());
 
                             if(imageBitmap != null && pathToImage != null){
                                 String imageUrl = null;
@@ -173,7 +189,6 @@ public class SignUpWithEmailActivity extends AppCompatActivity {
                                 StorageReference storageReference = FirebaseStorage.getInstance().getReference("ProfilePictures").child(imageUrl);
 
                                 UploadTask uploadTask = storageReference.putFile(pathToImage);
-                                Log.i("TAGIIIIIII", pathToImage.toString());
 
                                 try{
 
@@ -181,6 +196,7 @@ public class SignUpWithEmailActivity extends AppCompatActivity {
                                         @Override
                                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
 
+                                            userPhotoUrl = taskSnapshot.getDownloadUrl().toString();
                                             FirebaseUser usez = mAuth.getCurrentUser();
 
                                             UserProfileChangeRequest profileUpdatez = new UserProfileChangeRequest.Builder()
@@ -189,6 +205,10 @@ public class SignUpWithEmailActivity extends AppCompatActivity {
                                                     .build();
 
                                             usez.updateProfile(profileUpdatez);
+
+                                            temp_user.setProfilePicture(userPhotoUrl);
+
+                                            addUserInDatabase(temp_user);
                                         }
                                     }).addOnFailureListener(new OnFailureListener() {
                                         @Override
@@ -206,6 +226,7 @@ public class SignUpWithEmailActivity extends AppCompatActivity {
                                 }
                             }
 
+                            addUserInDatabase(temp_user);
                             startActivity(new Intent(getApplicationContext(), MainActivity.class));
                         }
                     })
@@ -231,6 +252,27 @@ public class SignUpWithEmailActivity extends AppCompatActivity {
                             }
                         }
                     });
+
+    }
+
+    private void addUserInDatabase(User temp_user) {
+        /*Add the user in the realtime database*/
+
+        DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference("Users");
+
+        EmailRefactor emRef = new EmailRefactor();
+
+        String em = emRef.refactorEmail(emailTextField.getText().toString());
+
+        databaseRef.child(em).setValue(temp_user).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+
+                if(task.isSuccessful()){
+                    Log.d(TAG, "SUCCESS");
+                }
+            }
+        });
 
     }
 

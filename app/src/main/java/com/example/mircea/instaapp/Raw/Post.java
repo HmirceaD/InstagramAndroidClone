@@ -10,6 +10,7 @@ import java.util.List;
 public class Post {
 
     private String username;
+    private String email;
     private Bitmap userProfilePicture;
     private Bitmap userImage;
     private int likes;
@@ -21,9 +22,10 @@ public class Post {
 
     public Post(){}
 
-    public Post(int c, int l, String u, long lt, String iUrl, String userProf){
+    public Post(int c, int l, String u, String em, long lt, String iUrl, String userProf){
 
         this.userImageUri = userProf;
+        this.email = em;
         this.imageUrl = iUrl;
         this.dateTime = lt;
         this.username = u;
@@ -36,6 +38,8 @@ public class Post {
     public void setUserProfilePicture(Bitmap userProfilePicture) {this.userProfilePicture = userProfilePicture;}
 
     public String getImageUrl() {return imageUrl;}
+
+    public String getEmail() {return email;}
 
     public long getLocalDateTime() { return dateTime;}
 
