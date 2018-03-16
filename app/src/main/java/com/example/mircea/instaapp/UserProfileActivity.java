@@ -7,6 +7,7 @@ import android.media.MediaPlayer;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -77,6 +78,7 @@ public class UserProfileActivity extends AppCompatActivity {
 
         Intent it = getIntent();
         EmailRefactor emailRefactor = new EmailRefactor();
+
         String crrEmail = emailRefactor.refactorEmail(it.getStringExtra("Email"));
 
         databaseReference = FirebaseDatabase.getInstance().getReference("Users");

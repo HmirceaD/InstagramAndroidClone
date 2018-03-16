@@ -205,15 +205,15 @@ public class UploadPostActivity extends AppCompatActivity {
 
         EmailRefactor emailRefactor = new EmailRefactor();
 
-        String reference = "Users/" + emailRefactor.refactorEmail(mAuth.getCurrentUser().getEmail()) + "/Posts";
+        String reference = "Users/" + emailRefactor.refactorEmail(mAuth.getCurrentUser().getEmail() + "/Posts");
 
         DatabaseReference usersDatabase = FirebaseDatabase.getInstance().getReference(reference);
 
-        Map<String, Object> idUpdate = new HashMap<>();
+        Map<String, Object> idValue = new HashMap<>();
 
-        idUpdate.put("postId", postId);
+        idValue.put(postId, "postId");
 
-        usersDatabase.updateChildren(idUpdate).addOnCompleteListener(new OnCompleteListener<Void>() {
+        usersDatabase.updateChildren(idValue).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
 
