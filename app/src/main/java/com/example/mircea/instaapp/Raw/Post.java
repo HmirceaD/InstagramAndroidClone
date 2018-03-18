@@ -18,11 +18,11 @@ public class Post {
     private long dateTime;
     private String imageUrl;
     private String userImageUri;
-
+    private String pushId;
 
     public Post(){}
 
-    public Post(int c, int l, String u, String em, long lt, String iUrl, String userProf){
+    public Post(int c, int l, String u, String em, long lt, String iUrl, String userProf, String p){
 
         this.userImageUri = userProf;
         this.email = em;
@@ -31,7 +31,10 @@ public class Post {
         this.username = u;
         this.likes = l;
         this.comments = c;
+        this.pushId = p;
     }
+
+    public String getPushId() {return pushId;}
 
     public String getUserImageUri() {return userImageUri;}
 

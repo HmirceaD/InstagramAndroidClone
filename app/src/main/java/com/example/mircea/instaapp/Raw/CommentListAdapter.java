@@ -53,6 +53,7 @@ public class CommentListAdapter extends ArrayAdapter<Comment> {
 
         if(comment != null){
 
+            //TODO(7): DOWNLOAD THE USER IMAGE POR FAVOR
             miniProfilePicture = commentView.findViewById(R.id.commentProfilePicture);
             commentUsername = commentView.findViewById(R.id.commentUserText);
             commentText = commentView.findViewById(R.id.commentText);
@@ -83,7 +84,7 @@ public class CommentListAdapter extends ArrayAdapter<Comment> {
 
             if(commentPostedText != null){
 
-                commentPostedText.setText(comment.getTimePosted() + " ago");
+                getTime(comment.getTimePosted());
             }
 
             if(answerText != null){
@@ -93,6 +94,25 @@ public class CommentListAdapter extends ArrayAdapter<Comment> {
         }
 
         return commentView;
+    }
+
+    private void getTime(long mili){
+        //minutes
+        long time = (((System.currentTimeMillis() - mili) / 1000) %60);
+
+        if(time >= 60){
+            //hour
+            time /= 60;
+            if(time >= 24){
+                //days
+                time /= 24;
+                commentPostedText.setText(time + "d ago");
+            }else{
+                commentPostedText.setText(time + "h ago");
+            }
+        }else{
+            commentPostedText.setText(time + "m ago");
+        }
     }
 
     @Override

@@ -69,7 +69,6 @@ public class UserProfileActivity extends AppCompatActivity {
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        //TODO(5)TEST THIS INTENT STUFF MORE
 
         if(intent != null && intent.hasExtra("Email")){
 

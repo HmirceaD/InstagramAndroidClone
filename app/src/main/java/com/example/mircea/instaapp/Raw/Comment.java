@@ -12,7 +12,7 @@ public class Comment {
 
     public Comment() {}
 
-    public Comment(String photoUrl, String commentUsername, String commentText, int timePosted) {
+    public Comment(String photoUrl, String commentUsername, String commentText, long timePosted) {
 
         this.photoUrl = photoUrl;
         //TODO(7): ADD THE SET IMAGE FROM FIREBASE Here

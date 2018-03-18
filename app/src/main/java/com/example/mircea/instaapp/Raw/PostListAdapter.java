@@ -170,7 +170,7 @@ public class PostListAdapter extends ArrayAdapter<Post>{
 
             Intent it = new Intent(mContext, CommentsActivity.class);
             it.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            //it.putExtra("Email", post.getEmail());
+            it.putExtra("PushId", post.getPushId());
             mContext.startActivity(it);
         }
     }

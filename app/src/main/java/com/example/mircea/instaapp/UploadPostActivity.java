@@ -133,10 +133,7 @@ public class UploadPostActivity extends AppCompatActivity {
 
             postStorage(storageRef);
 
-            String currentEmail = mAuth.getCurrentUser().getEmail();
-
-            Post post = new Post(0, 0, currentUser, currentEmail, currentTime, imageUrl, profilePictureUri);
-            postDatabase(postDatabase, post);
+            postDatabase(postDatabase, imageUrl);
 
         }
     }
@@ -171,7 +168,9 @@ public class UploadPostActivity extends AppCompatActivity {
         });
     }
 
-    private void postDatabase(DatabaseReference postData, Post crrPost) {
+    private void postDatabase(DatabaseReference postData, String imageUrl) {
+
+
 
         /**
          * This pushes the post data to the database
@@ -180,6 +179,10 @@ public class UploadPostActivity extends AppCompatActivity {
         //Get the id
         DatabaseReference pushReference = postData.push();
         String postId = pushReference.getKey();
+
+        String currentEmail = mAuth.getCurrentUser().getEmail();
+
+        Post crrPost = new Post(0, 0, currentUser, currentEmail, currentTime, imageUrl, profilePictureUri, postId);
 
         //push the post to the post database
         pushReference.setValue(crrPost).addOnSuccessListener(new OnSuccessListener<Void>() {
