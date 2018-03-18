@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/commentProfilePicture"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignTop="@+id/commentUserText"
+        android:layout_marginStart="16dp"
+        app:srcCompat="@drawable/common_google_signin_btn_icon_dark" />
+
+    <TextView
+        android:id="@+id/commentUserText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="11dp"
+        android:layout_marginTop="14dp"
+        android:layout_toEndOf="@+id/commentProfilePicture"
+        android:text="Janel"
+        android:textAppearance="@style/TextAppearance.AppCompat.Tooltip" />
+
+    <TextView
+        android:id="@+id/commentText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/commentUserText"
+        android:layout_alignBottom="@+id/commentUserText"
+        android:layout_marginStart="12dp"
+        android:layout_toEndOf="@+id/commentUserText"
+        android:text="comment"
+        android:textAppearance="@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle" />
+
+    <TextView
+        android:id="@+id/commentTimeText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/commentProfilePicture"
+        android:layout_alignStart="@+id/commentUserText"
+        android:text="1h" />
+
+    <TextView
+        android:id="@+id/answerTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/commentTimeText"
+        android:layout_alignBottom="@+id/commentTimeText"
+        android:layout_alignStart="@+id/commentText"
+        android:text="Answer" />
+</RelativeLayout>

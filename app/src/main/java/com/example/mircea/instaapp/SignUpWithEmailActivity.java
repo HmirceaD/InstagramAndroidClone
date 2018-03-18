@@ -179,7 +179,7 @@ public class SignUpWithEmailActivity extends AppCompatActivity {
 
                             String email = emRef.refactorEmail(emailTextField.getText().toString());
 
-                            temp_user = new User(email, usernameTextField.getText().toString());
+                            temp_user = new User(email, usernameTextField.getText().toString(), 0, 0);
 
                             if(imageBitmap != null && pathToImage != null){
                                 String imageUrl = null;

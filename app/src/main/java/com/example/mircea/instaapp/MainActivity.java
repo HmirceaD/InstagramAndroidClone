@@ -215,6 +215,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void getUserProfilePicture(Post p, ArrayList<Post> posts, ListView postsList) {
+
         if(p.getUserImageUri() != null){
             StorageReference storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(p.getUserImageUri());
 

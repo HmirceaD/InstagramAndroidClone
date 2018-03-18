@@ -178,10 +178,11 @@ public class UploadPostActivity extends AppCompatActivity {
          */
 
         //Get the id
-        String postId = postData.push().getKey();
+        DatabaseReference pushReference = postData.push();
+        String postId = pushReference.getKey();
 
         //push the post to the post database
-        postData.push().setValue(crrPost).addOnSuccessListener(new OnSuccessListener<Void>() {
+        pushReference.setValue(crrPost).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
 

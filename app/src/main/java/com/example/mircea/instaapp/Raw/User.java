@@ -9,14 +9,26 @@ public class User {
     private String username;
     private String profilePicture;
     private static List<String> Posts = new ArrayList<>();
+    private int followersNum;
+    private int followingNum;
 
     public User(){}
 
-    public User(String em, String us){
+    public User(String em, String us, int feN, int fiN){
 
         this.email = em;
         this.username = us;
+        this.followersNum = feN;
+        this.followingNum = fiN;
     }
+
+    public int getFollowersNum() {return followersNum;}
+
+    public void setFollowersNum(int followersNum) {this.followersNum = followersNum;}
+
+    public int getFollowingNum() {return followingNum;}
+
+    public void setFollowingNum(int followingNum) {this.followingNum = followingNum;}
 
     public List<String> getPostArray() {return Posts;}
 

@@ -44,6 +44,12 @@ public class UserProfileActivity extends AppCompatActivity {
     //Ui
     private ImageView profilePicture;
     private TextView usernameText;
+    private TextView postsNumber;
+    private TextView followersNumber;
+    private TextView followingNumber;
+
+    //Logic
+    private int postsCounter = 0;
 
     //posts list
     private ListView postsList;
@@ -53,13 +59,29 @@ public class UserProfileActivity extends AppCompatActivity {
     //User profile
     private User crrUser;
 
+    //Miscelasnios nu stiu cum se scrie plm
+    private Intent myIntent;
+    private String crrEmail;
 
+    //Initialize new Intent
+
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        //TODO(5)TEST THIS INTENT STUFF MORE
+
+        if(intent != null && intent.hasExtra("Email")){
+
+            myIntent = intent;
+        }
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_profile);
-
 
         setupUi();
         setupFirebase();
@@ -69,6 +91,15 @@ public class UserProfileActivity extends AppCompatActivity {
 
         profilePicture = findViewById(R.id.profilePicture);
         usernameText = findViewById(R.id.usernameText);
+        postsNumber = findViewById(R.id.postsNumber);
+        followersNumber = findViewById(R.id.followersNumber);
+        followingNumber = findViewById(R.id.followingNumber);
+
+        postsList = findViewById(R.id.postsView);
+        posts = new ArrayList<>();
+
+        postAdp = new PostListAdapter(posts, getApplication());
+        postsList.setAdapter(postAdp);
 
     }
 
@@ -76,10 +107,13 @@ public class UserProfileActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
 
-        Intent it = getIntent();
         EmailRefactor emailRefactor = new EmailRefactor();
 
-        String crrEmail = emailRefactor.refactorEmail(it.getStringExtra("Email"));
+        if(myIntent == null){
+            myIntent = getIntent();
+        }
+
+        String crrEmail = emailRefactor.refactorEmail(myIntent.getStringExtra("Email"));
 
         databaseReference = FirebaseDatabase.getInstance().getReference("Users");
 
@@ -89,28 +123,119 @@ public class UserProfileActivity extends AppCompatActivity {
 
                 if(dataSnapshot != null){
 
+                    //set the user's username
                     String usernameStr = dataSnapshot.child("username").getValue().toString();
                     usernameText.setText(usernameStr);
 
+                    //set the user's profile picture
                     String profilePictureUrl = dataSnapshot.child("profilePicture").getValue().toString();
-
-                    //get the profile picture
                     setProfilePicture(profilePictureUrl);
+
+                    //set the number of followers
+                    String followersStr = dataSnapshot.child("followersNum").getValue().toString();
+                    followersNumber.setText(followersStr);
+
+                    //set the number of follows
+                    String followsStr = dataSnapshot.child("followingNum").getValue().toString();
+                    followingNumber.setText(followsStr);
+
+                    //get all the user's posts
+                    for(DataSnapshot id: dataSnapshot.child("Posts").getChildren()){
+
+                        addPostToListView(id.getKey());
+                    }
                 }
             }
-
             @Override
-            public void onCancelled(DatabaseError databaseError) {
+            public void onCancelled(DatabaseError databaseError) {}
+        });
+
+    }
+
+    private void addPostToListView(String key) {
+
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Post/" + key);
+
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                if(dataSnapshot != null){
+
+                    postAdp = new PostListAdapter(posts, getApplicationContext());
+
+                    Post p = dataSnapshot.getValue(Post.class);
+                    postsNumber.setText(Integer.toString(++postsCounter));
+
+                    getPostImage(p, posts, postsList);
+
+
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {}
+        });
+    }
+
+    private void getPostImage(Post p, ArrayList<Post> posts, ListView postsList) {
+
+        StorageReference storageReference = FirebaseStorage.getInstance().getReference(p.getImageUrl());
+
+        final long ONE_MEGABYTE = 1024*1024 *5;
+        storageReference.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+            @Override
+            public void onSuccess(byte[] bytes) {
+
+                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+
+                p.setUserImage(bitmap);
+                //get the profile picture
+                p.setUserProfilePicture(bitmap);
+                //set the profile picture
+                getUserProfilePicture(p, posts, postsList);
+
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
 
             }
         });
+    }
+
+    private void getUserProfilePicture(Post p, ArrayList<Post> posts, ListView postsList) {
+        if(p.getUserImageUri() != null){
+            StorageReference storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(p.getUserImageUri());
+
+            final long ONE_MEGABYTE = 1024 * 1024*5;
+            storageReference.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                @Override
+                public void onSuccess(byte[] bytes) {
+
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+
+                    p.setUserProfilePicture(bitmap);
+                    posts.add(p);
+                    postsList.setAdapter(postAdp);
+
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {}
+            });
+
+        }else{
+            /*no profile picture found*/
+            p.setUserProfilePicture(null);
+            posts.add(p);
+            postsList.setAdapter(postAdp);
+        }
 
     }
 
     private void setProfilePicture(String profilePictureUrl) {
         /*Set the profile picture*/
 
-        //StorageReference storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(p.getUserImageUri());
         StorageReference storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(profilePictureUrl);
 
         final long ONE_MEGABYTE = 1024 * 1024*5;
@@ -118,18 +243,25 @@ public class UserProfileActivity extends AppCompatActivity {
             @Override
             public void onSuccess(byte[] bytes) {
 
-                Bitmap profileBitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                if(bytes != null){
 
-                profilePicture.setImageBitmap(profileBitmap);
+                    Bitmap profileBitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+
+                    profilePicture.setImageBitmap(profileBitmap);
+                }else{
+
+                    profilePicture.setImageResource(R.drawable.instagram_default2);
+                }
             }
 
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
 
+                profilePicture.setImageResource(R.drawable.instagram_default2);
+
                 Toast.makeText(getApplicationContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
             }
         });
-
     }
 }

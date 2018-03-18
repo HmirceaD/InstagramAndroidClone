@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.mircea.instaapp.CommentsActivity;
 import com.example.mircea.instaapp.R;
 import com.example.mircea.instaapp.UserProfileActivity;
 
@@ -116,8 +117,10 @@ public class PostListAdapter extends ArrayAdapter<Post>{
                 likeButton.setImageResource(R.drawable.whiteheart);
             }
 
+
             if(commentsButton != null){
                 commentsButton.setImageResource(R.drawable.commentbutton);
+                commentsButton.setOnClickListener(new CommentClickListener());
             }
 
             if(shareButton != null){
@@ -153,9 +156,22 @@ public class PostListAdapter extends ArrayAdapter<Post>{
         public void onClick(View view) {
 
             Intent it = new Intent(mContext, UserProfileActivity.class);
+            it.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             it.putExtra("Email", post.getEmail());
             mContext.startActivity(it);
 
+        }
+    }
+
+    private class CommentClickListener implements View.OnClickListener{
+
+        @Override
+        public void onClick(View view) {
+
+            Intent it = new Intent(mContext, CommentsActivity.class);
+            it.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            //it.putExtra("Email", post.getEmail());
+            mContext.startActivity(it);
         }
     }
 }
