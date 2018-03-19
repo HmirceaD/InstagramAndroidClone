@@ -29,29 +29,35 @@ public class PostListAdapter extends ArrayAdapter<Post>{
     //Array adapter
     private ArrayList<Post> postList;
     private Context mContext;
-    private Post post;
 
     //Logic
     private boolean  doubleClick = false;
     private Handler doubleHandler;
     private boolean isLike = true;
 
+    //inflater
+    LayoutInflater lI;
+
+    private int globalPosition;
+
     //Ui
-    private ImageView likeButton;
-    private TextView commentsText;
+    //private ImageView likeButton;
+    //private TextView commentsText;
+    //private ImageView userProfPic;
 
     public PostListAdapter(ArrayList<Post> p, Context c){
         super(c, R.layout.insta_post, p);
 
         this.postList = p;
         this.mContext = c;
+        lI = LayoutInflater.from(mContext);
     }
 
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
 
-        View postView = convertView;
+        /*View postView = convertView;
 
         if(postView == null){
 
@@ -65,70 +71,108 @@ public class PostListAdapter extends ArrayAdapter<Post>{
 
         if(post != null){
 
-            ImageView userProfPic = postView.findViewById(R.id.postUserPicture);
+            userProfPic = postView.findViewById(R.id.postUserPicture);
 
-            userProfPic.setOnClickListener(new MainImageClickListener());
             TextView username = postView.findViewById(R.id.postUsername);
             ImageView image = postView.findViewById(R.id.postImage);
 
-            /*handle main image double clicks*/
+            //handle main image double clicks
             TextView likesText = postView.findViewById(R.id.noLikesText);
             commentsText = postView.findViewById(R.id.commentsText);
 
             likeButton = postView.findViewById(R.id.likeButton);
             ImageView commentsButton = postView.findViewById(R.id.commentButton);
-            ImageView shareButton = postView.findViewById(R.id.shareButton);
+            ImageView shareButton = postView.findViewById(R.id.shareButton);*/
 
-            if(userProfPic != null){
-                /*Set the Profile picture*/
-                if(post.getUserProfilePicture() != null){
+        ViewHolder viewHolder;
 
-                    userProfPic.setImageBitmap(post.getUserProfilePicture());
+        if(convertView == null){
+            convertView = lI.inflate(R.layout.insta_post, null);
+            viewHolder = new ViewHolder();
 
-                }else{
-
-                    userProfPic.setImageResource(R.drawable.instagram_default2);
-                }
-            }
-
-            if(username != null){
-                username.setText(post.getUsername());
-            }
-
-            if(image != null){
-                /*Set the main post picture*/
-                if(post.getUserImage() != null){
-                    image.setImageBitmap(post.getUserImage());
-                }else{
-                    image.setImageResource(R.drawable.defaultpost);
-                }
-
-            }
-
-            if(likesText != null){
-                likesText.setText(post.getLikes() + " likes");
-            }
-
-            if(commentsText != null){
-                commentsText.setText("See all " + post.getComments() + " comments");
-            }
-
-            if(likeButton != null){
-                likeButton.setImageResource(R.drawable.whiteheart);
-            }
+            viewHolder.userProfPic = convertView.findViewById(R.id.postUserPicture);
+            viewHolder.username = convertView.findViewById(R.id.postUsername);
+            viewHolder.image = convertView.findViewById(R.id.postImage);
+            viewHolder.likesText = convertView.findViewById(R.id.noLikesText);
+            viewHolder.commentsText = convertView.findViewById(R.id.commentsText);
+            viewHolder.likeButton = convertView.findViewById(R.id.likeButton);
+            viewHolder.commentsButton = convertView.findViewById(R.id.commentButton);
+            viewHolder.shareButton = convertView.findViewById(R.id.shareButton);
+            convertView.setTag(viewHolder);
 
 
-            if(commentsButton != null){
-                commentsButton.setImageResource(R.drawable.commentbutton);
-                commentsButton.setOnClickListener(new CommentClickListener());
-            }
+        }else{
 
-            if(shareButton != null){
-                shareButton.setImageResource(R.drawable.sharebutton);
-            }
+            viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        return postView;
+        globalPosition = position;
+
+            if(viewHolder.userProfPic != null){
+                //Set the Profile picture
+                if(postList.get(globalPosition).getUserProfilePicture() != null){
+
+                    viewHolder.userProfPic.setImageBitmap(postList.get(globalPosition).getUserProfilePicture());
+
+                }else{
+
+                    viewHolder.userProfPic.setImageResource(R.drawable.instagram_default2);
+                }
+            }
+
+            if(viewHolder.username != null){
+                viewHolder.username.setText(postList.get(globalPosition).getUsername());
+            }
+
+            if(viewHolder.image != null){
+                //Set the main post picture
+                if(postList.get(globalPosition).getUserImage() != null){
+                    viewHolder.image.setImageBitmap(postList.get(globalPosition).getUserImage());
+                }else{
+                    viewHolder.image.setImageResource(R.drawable.defaultpost);
+                }
+
+            }
+
+            if(viewHolder.likesText != null){
+                viewHolder.likesText.setText(postList.get(globalPosition).getLikes() + " likes");
+            }
+
+            if(viewHolder.commentsText != null){
+                viewHolder.commentsText.setText("See all " + postList.get(globalPosition).getComments() + " comments");
+            }
+
+            if(viewHolder.likeButton != null){
+                viewHolder.likeButton.setImageResource(R.drawable.whiteheart);
+            }
+
+
+            if(viewHolder.commentsButton != null){
+                viewHolder.commentsButton.setImageResource(R.drawable.commentbutton);
+
+            }
+
+            if(viewHolder.shareButton != null){
+                viewHolder.shareButton.setImageResource(R.drawable.sharebutton);
+            }
+
+        viewHolder.userProfPic.setTag(position);
+        viewHolder.userProfPic.setOnClickListener(new MainImageClickListener());
+        viewHolder.commentsButton.setTag(position);
+        viewHolder.commentsButton.setOnClickListener(new CommentClickListener());
+        return convertView;
+
+    }
+
+    static class ViewHolder{
+        ImageView userProfPic;
+        TextView username;
+        ImageView image;
+        TextView likesText;
+        TextView commentsText;
+        ImageView likeButton;
+        ImageView commentsButton;
+        ImageView shareButton;
 
     }
 
@@ -157,7 +201,7 @@ public class PostListAdapter extends ArrayAdapter<Post>{
 
             Intent it = new Intent(mContext, UserProfileActivity.class);
             it.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            it.putExtra("Email", post.getEmail());
+            it.putExtra("Email", postList.get((Integer)view.getTag()).getEmail());
             mContext.startActivity(it);
 
         }
@@ -170,7 +214,7 @@ public class PostListAdapter extends ArrayAdapter<Post>{
 
             Intent it = new Intent(mContext, CommentsActivity.class);
             it.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            it.putExtra("PushId", post.getPushId());
+            it.putExtra("PushId", postList.get((Integer)view.getTag()).getPushId());
             mContext.startActivity(it);
         }
     }

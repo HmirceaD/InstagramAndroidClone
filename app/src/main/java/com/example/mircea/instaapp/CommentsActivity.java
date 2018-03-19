@@ -1,6 +1,8 @@
 package com.example.mircea.instaapp;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -15,6 +17,8 @@ import android.widget.Toast;
 import com.example.mircea.instaapp.Raw.Comment;
 import com.example.mircea.instaapp.Raw.CommentListAdapter;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -23,8 +27,12 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class CommentsActivity extends AppCompatActivity {
 
@@ -40,7 +48,7 @@ public class CommentsActivity extends AppCompatActivity {
     //Ui
     private ListView commentsList;
     private EditText commentsEditText;
-    private ImageView miniProfilePicture;
+    private CircleImageView miniProfilePicture;
     private Button postCommentButton;
 
     //Miscellaneous
@@ -102,17 +110,42 @@ public class CommentsActivity extends AppCompatActivity {
                 for(DataSnapshot data: dataSnapshot.getChildren()){
 
                     Comment c = data.getValue(Comment.class);
-                    comments.add(c);
-                    commentsList.setAdapter(commentAdp);
-
+                    getUserImage(c.getPhotoUrl(), c, comments, commentsList);
                 }
             }
-
             @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
+            public void onCancelled(DatabaseError databaseError) {}
         });
+    }
+
+    private void getUserImage(String photoUrl, Comment c, ArrayList<Comment> comments, ListView commentsList) {
+
+        if(photoUrl != null){
+            StorageReference storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(photoUrl);
+
+            final long ONE_MEGABYTE = 1024 * 1024*5;
+            storageReference.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                @Override
+                public void onSuccess(byte[] bytes) {
+
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+
+                    c.setMiniProfilePicture(bitmap);
+                    comments.add(c);
+                    commentsList.setAdapter(commentAdp);
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+
+                }
+            });
+        }else{
+            /*no profile picture found*/
+            c.setMiniProfilePicture(null);
+            comments.add(c);
+            commentsList.setAdapter(commentAdp);
+        }
     }
 
     private void setupUi() {
@@ -120,15 +153,43 @@ public class CommentsActivity extends AppCompatActivity {
         //setup the firebase auth
         mAuth = FirebaseAuth.getInstance();
         crrUser = mAuth.getCurrentUser();
-        //Initiate database reference
-
 
         //setup the ui elements
         commentsList = findViewById(R.id.commentsList);
         commentsEditText = findViewById(R.id.commentEditText);
         miniProfilePicture = findViewById(R.id.miniProfilePicture);
+        getYourProfilePicture();
         postCommentButton = findViewById(R.id.postCommentButton);
         postCommentButton.setOnClickListener(new AddCommentListener());
+    }
+
+    private void getYourProfilePicture() {
+
+        String profilePictureUrl = crrUser.getPhotoUrl().toString();
+
+        if(profilePictureUrl != null){
+            StorageReference storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(profilePictureUrl);
+
+            final long ONE_MEGABYTE = 1024 * 1024*5;
+            storageReference.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                @Override
+                public void onSuccess(byte[] bytes) {
+
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+
+                    miniProfilePicture.setImageBitmap(bitmap);
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+
+                }
+            });
+        }else{
+            /*no profile picture found*/
+            miniProfilePicture.setImageResource(R.drawable.instagram_default2);
+        }
+
     }
 
     private class AddCommentListener implements View.OnClickListener{

@@ -15,6 +15,7 @@ import com.example.mircea.instaapp.R;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 public class CommentListAdapter extends ArrayAdapter<Comment> {
 
@@ -97,21 +98,29 @@ public class CommentListAdapter extends ArrayAdapter<Comment> {
     }
 
     private void getTime(long mili){
-        //minutes
-        long time = (((System.currentTimeMillis() - mili) / 1000) %60);
+
+        long difference = System.currentTimeMillis() - mili;
+        long time = TimeUnit.MILLISECONDS.toSeconds(difference);
 
         if(time >= 60){
-            //hour
-            time /= 60;
-            if(time >= 24){
-                //days
-                time /= 24;
-                commentPostedText.setText(time + "d ago");
-            }else{
-                commentPostedText.setText(time + "h ago");
+
+            time = TimeUnit.MILLISECONDS.toMinutes(difference);
+
+            if(time >= 60){
+                time = TimeUnit.MINUTES.toHours(time);
+
+                if(time >= 24){
+
+                    time = TimeUnit.HOURS.toDays(time);
+                    commentPostedText.setText(time + "d ago");
+                }else{
+                    commentPostedText.setText(time + "h ago");
+                }
+            }else {
+                commentPostedText.setText(time + "m ago");
             }
         }else{
-            commentPostedText.setText(time + "m ago");
+            commentPostedText.setText(time + "s ago");
         }
     }
 

@@ -61,20 +61,20 @@ public class UserProfileActivity extends AppCompatActivity {
 
     //Miscelasnios nu stiu cum se scrie plm
     private Intent myIntent;
-    private String crrEmail;
+    private String crrUserEmail;
 
     //Initialize new Intent
 
 
     @Override
     protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-
         if(intent != null && intent.hasExtra("Email")){
 
             myIntent = intent;
+            EmailRefactor emailRefactor = new EmailRefactor();
+            crrUserEmail = emailRefactor.refactorEmail(myIntent.getStringExtra("Email"));
         }
-
+        super.onNewIntent(intent);
     }
 
     @Override
@@ -110,13 +110,12 @@ public class UserProfileActivity extends AppCompatActivity {
 
         if(myIntent == null){
             myIntent = getIntent();
+            crrUserEmail = emailRefactor.refactorEmail(myIntent.getStringExtra("Email"));
         }
-
-        String crrEmail = emailRefactor.refactorEmail(myIntent.getStringExtra("Email"));
 
         databaseReference = FirebaseDatabase.getInstance().getReference("Users");
 
-        databaseReference.child(crrEmail).addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseReference.child(crrUserEmail).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
@@ -141,7 +140,10 @@ public class UserProfileActivity extends AppCompatActivity {
                     //get all the user's posts
                     for(DataSnapshot id: dataSnapshot.child("Posts").getChildren()){
 
-                        addPostToListView(id.getKey());
+                        if(id != null){
+                            addPostToListView(id.getKey());
+
+                        }
                     }
                 }
             }
