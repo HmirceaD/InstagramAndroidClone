@@ -15,10 +15,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.mircea.instaapp.CommentsActivity;
 import com.example.mircea.instaapp.R;
 import com.example.mircea.instaapp.UserProfileActivity;
-
 
 import java.util.ArrayList;
 
@@ -58,6 +58,7 @@ public class PostListAdapter extends ArrayAdapter<Post>{
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
 
         ViewHolder viewHolder;
+        globalPosition = position;
 
         if(convertView == null){
             convertView = lI.inflate(R.layout.insta_post, null);
@@ -71,6 +72,37 @@ public class PostListAdapter extends ArrayAdapter<Post>{
             viewHolder.likeButton = convertView.findViewById(R.id.likeButton);
             viewHolder.commentsButton = convertView.findViewById(R.id.commentButton);
             viewHolder.shareButton = convertView.findViewById(R.id.shareButton);
+
+            if(viewHolder.userProfPic != null){
+                //Set the Profile picture
+
+                if(viewHolder.username != null){
+                    viewHolder.username.setText(postList.get(globalPosition).getUsername());
+                }
+
+                if(viewHolder.likesText != null){
+                    viewHolder.likesText.setText(postList.get(globalPosition).getLikes() + " likes");
+                }
+
+                if(viewHolder.commentsText != null){
+                    viewHolder.commentsText.setText("See all " + postList.get(globalPosition).getComments() + " comments");
+                }
+
+                if(viewHolder.likeButton != null){
+                    viewHolder.likeButton.setImageResource(R.drawable.whiteheart);
+                }
+
+
+                if(viewHolder.commentsButton != null){
+                    viewHolder.commentsButton.setImageResource(R.drawable.commentbutton);
+
+                }
+
+                if(viewHolder.shareButton != null){
+                    viewHolder.shareButton.setImageResource(R.drawable.sharebutton);
+                }
+            }
+
             convertView.setTag(viewHolder);
 
         }else{
@@ -78,60 +110,22 @@ public class PostListAdapter extends ArrayAdapter<Post>{
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        globalPosition = position;
-
-            if(viewHolder.userProfPic != null){
-                //Set the Profile picture
-                if(postList.get(globalPosition).getUserProfilePicture() != null){
-
-                    viewHolder.userProfPic.setImageBitmap(postList.get(globalPosition).getUserProfilePicture());
-
-                }else{
-
-                    viewHolder.userProfPic.setImageResource(R.drawable.instagram_default2);
-                }
-            }
-
-            if(viewHolder.username != null){
-                viewHolder.username.setText(postList.get(globalPosition).getUsername());
-            }
-
-            if(viewHolder.image != null){
-                //Set the main post picture
-                if(postList.get(globalPosition).getUserImage() != null){
-                    viewHolder.image.setImageBitmap(postList.get(globalPosition).getUserImage());
-                }else{
-                    viewHolder.image.setImageResource(R.drawable.defaultpost);
-                }
-
-            }
-
-            if(viewHolder.likesText != null){
-                viewHolder.likesText.setText(postList.get(globalPosition).getLikes() + " likes");
-            }
-
-            if(viewHolder.commentsText != null){
-                viewHolder.commentsText.setText("See all " + postList.get(globalPosition).getComments() + " comments");
-            }
-
-            if(viewHolder.likeButton != null){
-                viewHolder.likeButton.setImageResource(R.drawable.whiteheart);
-            }
 
 
-            if(viewHolder.commentsButton != null){
-                viewHolder.commentsButton.setImageResource(R.drawable.commentbutton);
-
-            }
-
-            if(viewHolder.shareButton != null){
-                viewHolder.shareButton.setImageResource(R.drawable.sharebutton);
-            }
-
-        viewHolder.userProfPic.setTag(position);
+        viewHolder.userProfPic.setTag(R.id.postUserPicture, position);
         viewHolder.userProfPic.setOnClickListener(new MainImageClickListener());
-        viewHolder.commentsButton.setTag(position);
+
+        Glide.with(mContext)
+                .load(postList.get(globalPosition).getUserProfilePicture())
+                .into(viewHolder.userProfPic);
+
+        Glide.with(mContext)
+                .load(postList.get(globalPosition).getUserImage())
+                .into(viewHolder.image);
+
+        viewHolder.commentsButton.setTag(R.id.postImage,position);
         viewHolder.commentsButton.setOnClickListener(new CommentClickListener());
+
         return convertView;
 
     }
@@ -173,9 +167,8 @@ public class PostListAdapter extends ArrayAdapter<Post>{
 
             Intent it = new Intent(mContext, UserProfileActivity.class);
             it.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            it.putExtra("Email", postList.get((Integer)view.getTag()).getEmail());
+            it.putExtra("Email", postList.get((Integer)view.getTag(R.id.postUserPicture)).getEmail());
             mContext.startActivity(it);
-
         }
     }
 
@@ -186,7 +179,7 @@ public class PostListAdapter extends ArrayAdapter<Post>{
 
             Intent it = new Intent(mContext, CommentsActivity.class);
             it.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            it.putExtra("PushId", postList.get((Integer)view.getTag()).getPushId());
+            it.putExtra("PushId", postList.get((Integer)view.getTag(R.id.postImage)).getPushId());
             mContext.startActivity(it);
         }
     }

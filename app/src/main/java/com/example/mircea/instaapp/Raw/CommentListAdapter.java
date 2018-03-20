@@ -44,6 +44,9 @@ public class CommentListAdapter extends ArrayAdapter<Comment> {
 
         View commentView = convertView;
 
+        //TODO(8): REWRITE THIS SO IT HANDLES LIKE THE POST ADAPTER AND ADD GLIDE
+        //TODO(9): ADD GLIDE TO REAMAINAINDISANDISAIDNSAINDISANIDASNDAS ALL THE REST
+
         if(commentView == null){
 
             LayoutInflater lI = LayoutInflater.from(getContext());
@@ -66,7 +69,9 @@ public class CommentListAdapter extends ArrayAdapter<Comment> {
 
                 if(comment.getMiniProfilePicture() != null){
 
-                    miniProfilePicture.setImageBitmap(comment.getMiniProfilePicture());
+                    BitmapSampleDecoder bitmapSampleDecoder = new BitmapSampleDecoder(comment.getMiniProfilePicture(), miniProfilePicture.getHeight(), miniProfilePicture.getWidth());
+
+                    miniProfilePicture.setImageBitmap(bitmapSampleDecoder.decodeBitmap());
                 }else{
 
                     miniProfilePicture.setImageResource(R.drawable.instagram_default2);

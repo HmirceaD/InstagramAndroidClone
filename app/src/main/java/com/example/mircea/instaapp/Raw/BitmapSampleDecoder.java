@@ -2,6 +2,7 @@ package com.example.mircea.instaapp.Raw;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 
 public class BitmapSampleDecoder {
 
@@ -28,6 +29,7 @@ public class BitmapSampleDecoder {
 
         options.inSampleSize = calculateSampeOfByteArray(options, height, width);
 
+        options.inSampleSize = 16;
         options.inJustDecodeBounds = false;
 
         return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length, options);
@@ -49,6 +51,8 @@ public class BitmapSampleDecoder {
                 sampleSize *= 2;
             }
         }
+
+        Log.i("AMPULA MARE", Integer.toString(sampleSize));
 
         return sampleSize;
     }

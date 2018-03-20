@@ -188,11 +188,8 @@ public class UserProfileActivity extends AppCompatActivity {
             @Override
             public void onSuccess(byte[] bytes) {
 
-                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                p.setUserImage(bytes);
 
-                p.setUserImage(bitmap);
-                //get the profile picture
-                p.setUserProfilePicture(bitmap);
                 //set the profile picture
                 getUserProfilePicture(p, posts, postsList);
 
@@ -214,9 +211,7 @@ public class UserProfileActivity extends AppCompatActivity {
                 @Override
                 public void onSuccess(byte[] bytes) {
 
-                    Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-
-                    p.setUserProfilePicture(bitmap);
+                    p.setUserProfilePicture(bytes);
                     posts.add(p);
                     postsList.setAdapter(postAdp);
 

@@ -11,8 +11,8 @@ public class Post {
 
     private String username;
     private String email;
-    private Bitmap userProfilePicture;
-    private Bitmap userImage;
+    private byte[] userProfilePicture;
+    private byte[] userImage;
     private int likes;
     private int comments;
     private long dateTime;
@@ -38,7 +38,7 @@ public class Post {
 
     public String getUserImageUri() {return userImageUri;}
 
-    public void setUserProfilePicture(Bitmap userProfilePicture) {this.userProfilePicture = userProfilePicture;}
+    public void setUserProfilePicture(byte[] userProfilePicture) {this.userProfilePicture = userProfilePicture;}
 
     public String getImageUrl() {return imageUrl;}
 
@@ -50,13 +50,9 @@ public class Post {
         return username;
     }
 
-    public Bitmap getUserProfilePicture() {
-        return userProfilePicture;
-    }
+    public byte[] getUserProfilePicture() {return userProfilePicture;}
 
-    public Bitmap getUserImage() {
-        return userImage;
-    }
+    public byte[] getUserImage() {return userImage;}
 
     public int getLikes() {
         return likes;
@@ -66,5 +62,5 @@ public class Post {
         return comments;
     }
 
-    public void setUserImage(Bitmap userImage) {this.userImage = userImage;}
+    public void setUserImage(byte[] userImage) {this.userImage = userImage;}
 }

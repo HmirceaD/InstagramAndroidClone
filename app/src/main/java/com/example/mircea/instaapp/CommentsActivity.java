@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.example.mircea.instaapp.Raw.BitmapSampleDecoder;
 import com.example.mircea.instaapp.Raw.Comment;
 import com.example.mircea.instaapp.Raw.CommentListAdapter;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -128,9 +129,7 @@ public class CommentsActivity extends AppCompatActivity {
                 @Override
                 public void onSuccess(byte[] bytes) {
 
-                    Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-
-                    c.setMiniProfilePicture(bitmap);
+                    c.setMiniProfilePicture(bytes);
                     comments.add(c);
                     commentsList.setAdapter(commentAdp);
                 }
@@ -175,9 +174,9 @@ public class CommentsActivity extends AppCompatActivity {
                 @Override
                 public void onSuccess(byte[] bytes) {
 
-                    Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                    BitmapSampleDecoder bitmapSampleDecoder = new BitmapSampleDecoder(bytes, miniProfilePicture.getHeight(), miniProfilePicture.getWidth());
 
-                    miniProfilePicture.setImageBitmap(bitmap);
+                    miniProfilePicture.setImageBitmap(bitmapSampleDecoder.decodeBitmap());
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override

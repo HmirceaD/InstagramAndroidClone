@@ -26,6 +26,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.mircea.instaapp.Raw.BitmapSampleDecoder;
 import com.example.mircea.instaapp.Raw.Post;
 import com.example.mircea.instaapp.Raw.PostListAdapter;
 import com.example.mircea.instaapp.Raw.User;
@@ -75,13 +76,20 @@ public class MainActivity extends AppCompatActivity
     private TextView userText;
     private Button uploadButton;
 
+    private ImageView postImageView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        postImageView = findViewById(R.id.postImage);
+
         setupDrawer();
         mainLogic();
+
+
+
     }
 
     private void setupDrawer() {
@@ -196,11 +204,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onSuccess(byte[] bytes) {
 
-                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-
-                p.setUserImage(bitmap);
-                //get the profile picture
-                p.setUserProfilePicture(bitmap);
+                p.setUserImage(bytes);
                 //set the profile picture
                 getUserProfilePicture(p, posts, postsList);
 
@@ -221,9 +225,7 @@ public class MainActivity extends AppCompatActivity
                 @Override
                 public void onSuccess(byte[] bytes) {
 
-                    Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-
-                    p.setUserProfilePicture(bitmap);
+                    p.setUserProfilePicture(bytes);
                     posts.add(p);
                     postsList.setAdapter(postAdp);
 

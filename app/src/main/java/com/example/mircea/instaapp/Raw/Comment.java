@@ -11,7 +11,7 @@ import com.google.firebase.storage.StorageReference;
 
 public class Comment {
 
-    private Bitmap miniProfilePicture;
+    private byte[] miniProfilePicture;
     private String photoUrl;
     private String commentText;
     private String commentUsername;
@@ -29,9 +29,9 @@ public class Comment {
 
 
 
-    public Bitmap getMiniProfilePicture() {return miniProfilePicture;}
+    public byte[] getMiniProfilePicture() {return miniProfilePicture;}
 
-    public void setMiniProfilePicture(Bitmap miniProfilePicture) {this.miniProfilePicture = miniProfilePicture;}
+    public void setMiniProfilePicture(byte[] miniProfilePicture) {this.miniProfilePicture = miniProfilePicture;}
 
     public String getPhotoUrl() {return photoUrl;}
 
