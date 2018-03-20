@@ -207,9 +207,7 @@ public class MainActivity extends AppCompatActivity
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
-            public void onFailure(@NonNull Exception e) {
-
-            }
+            public void onFailure(@NonNull Exception e) {}
         });
     }
 
@@ -232,9 +230,7 @@ public class MainActivity extends AppCompatActivity
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
-                public void onFailure(@NonNull Exception e) {
-
-                }
+                public void onFailure(@NonNull Exception e) {}
             });
 
         }else{

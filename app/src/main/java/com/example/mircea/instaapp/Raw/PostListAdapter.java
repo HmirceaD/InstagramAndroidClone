@@ -57,33 +57,6 @@ public class PostListAdapter extends ArrayAdapter<Post>{
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
 
-        /*View postView = convertView;
-
-        if(postView == null){
-
-            LayoutInflater lI;
-
-            lI = LayoutInflater.from(getContext());
-            postView = lI.inflate(R.layout.insta_post, null);
-        }
-
-        post = getItem(position);
-
-        if(post != null){
-
-            userProfPic = postView.findViewById(R.id.postUserPicture);
-
-            TextView username = postView.findViewById(R.id.postUsername);
-            ImageView image = postView.findViewById(R.id.postImage);
-
-            //handle main image double clicks
-            TextView likesText = postView.findViewById(R.id.noLikesText);
-            commentsText = postView.findViewById(R.id.commentsText);
-
-            likeButton = postView.findViewById(R.id.likeButton);
-            ImageView commentsButton = postView.findViewById(R.id.commentButton);
-            ImageView shareButton = postView.findViewById(R.id.shareButton);*/
-
         ViewHolder viewHolder;
 
         if(convertView == null){
@@ -99,7 +72,6 @@ public class PostListAdapter extends ArrayAdapter<Post>{
             viewHolder.commentsButton = convertView.findViewById(R.id.commentButton);
             viewHolder.shareButton = convertView.findViewById(R.id.shareButton);
             convertView.setTag(viewHolder);
-
 
         }else{
 

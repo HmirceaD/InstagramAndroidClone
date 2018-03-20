@@ -15,6 +15,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.mircea.instaapp.Raw.BitmapSampleDecoder;
 import com.example.mircea.instaapp.Raw.EmailRefactor;
 import com.example.mircea.instaapp.Raw.Post;
 import com.example.mircea.instaapp.Raw.PostListAdapter;
@@ -246,7 +247,9 @@ public class UserProfileActivity extends AppCompatActivity {
 
                 if(bytes != null){
 
-                    Bitmap profileBitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                    BitmapSampleDecoder bitmapSampleDecoder = new BitmapSampleDecoder(bytes, profilePicture.getHeight(), profilePicture.getWidth());
+
+                    Bitmap profileBitmap = bitmapSampleDecoder.decodeBitmap();
 
                     profilePicture.setImageBitmap(profileBitmap);
                 }else{
