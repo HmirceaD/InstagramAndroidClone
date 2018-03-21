@@ -11,6 +11,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.example.mircea.instaapp.R;
 
 import java.util.ArrayDeque;
@@ -23,86 +24,86 @@ public class CommentListAdapter extends ArrayAdapter<Comment> {
     private ArrayList<Comment> commentList;
     private Context mContext;
     private Comment comment;
-
-    //Ui
-    private ImageView miniProfilePicture;
-    private TextView commentUsername;
-    private TextView commentText;
-    private TextView commentPostedText;
-    private TextView answerText;
+    private LayoutInflater lI;
+    private int globalPosition;
 
     public CommentListAdapter(ArrayList<Comment> cL, Context c){
         super(c, R.layout.single_comment, cL);
 
         this.commentList = cL;
         this.mContext = c;
+        lI = LayoutInflater.from(getContext());
     }
 
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
 
-        View commentView = convertView;
+        ViewHolder viewHolder;
+        globalPosition = position;
 
-        //TODO(8): REWRITE THIS SO IT HANDLES LIKE THE POST ADAPTER AND ADD GLIDE
-        //TODO(9): ADD GLIDE TO REAMAINAINDISANDISAIDNSAINDISANIDASNDAS ALL THE REST
+        if(convertView == null){
 
-        if(commentView == null){
+            convertView = lI.inflate(R.layout.single_comment, null);
+            viewHolder = new ViewHolder();
 
-            LayoutInflater lI = LayoutInflater.from(getContext());
-            commentView = lI.inflate(R.layout.single_comment, null);
-        }
-
-        comment = getItem(position);
-
-        if(comment != null){
-
-            //TODO(7): DOWNLOAD THE USER IMAGE POR FAVOR
-            miniProfilePicture = commentView.findViewById(R.id.commentProfilePicture);
-            commentUsername = commentView.findViewById(R.id.commentUserText);
-            commentText = commentView.findViewById(R.id.commentText);
-            commentPostedText = commentView.findViewById(R.id.commentTimeText);
-            answerText = commentView.findViewById(R.id.answerTextView);
+            viewHolder.miniProfilePicture = convertView.findViewById(R.id.commentProfilePicture);
+            viewHolder.commentUsername = convertView.findViewById(R.id.commentUserText);
+            viewHolder.commentText = convertView.findViewById(R.id.commentText);
+            viewHolder.commentPostedText = convertView.findViewById(R.id.commentTimeText);
+            viewHolder.answerText = convertView.findViewById(R.id.answerTextView);
 
             /*Initiate all the values*/
-            if(miniProfilePicture != null){
+            if(viewHolder.commentUsername != null){
 
-                if(comment.getMiniProfilePicture() != null){
-
-                    BitmapSampleDecoder bitmapSampleDecoder = new BitmapSampleDecoder(comment.getMiniProfilePicture(), miniProfilePicture.getHeight(), miniProfilePicture.getWidth());
-
-                    miniProfilePicture.setImageBitmap(bitmapSampleDecoder.decodeBitmap());
-                }else{
-
-                    miniProfilePicture.setImageResource(R.drawable.instagram_default2);
-                }
+                viewHolder.commentUsername.setText(commentList.get(globalPosition).getCommentUsername());
             }
 
-            if(commentUsername != null){
+            if(viewHolder.commentText != null){
 
-                commentUsername.setText(comment.getCommentUsername());
+                viewHolder.commentText.setText(commentList.get(globalPosition).getCommentText());
             }
 
-            if(commentText != null){
+            if(viewHolder.commentPostedText != null){
 
-                commentText.setText(comment.getCommentText());
+                getTime(commentList.get(globalPosition).getTimePosted(), viewHolder);
             }
 
-            if(commentPostedText != null){
+            if(viewHolder.answerText != null){
 
-                getTime(comment.getTimePosted());
+                viewHolder.answerText.setText("Answer");
             }
 
-            if(answerText != null){
+            convertView.setTag(viewHolder);
 
-                answerText.setText("Answer");
-            }
+        }else{
+            viewHolder = (CommentListAdapter.ViewHolder) convertView.getTag();
         }
 
-        return commentView;
+        if(commentList.get(globalPosition).getMiniProfilePicture() != null){
+
+            Glide.with(viewHolder.miniProfilePicture)
+                    .load(commentList.get(globalPosition).getMiniProfilePicture())
+                    .into(viewHolder.miniProfilePicture);
+        }else{
+            Glide.with(viewHolder.miniProfilePicture)
+                    .load(R.drawable.instagram_default2)
+                    .into(viewHolder.miniProfilePicture);
+        }
+
+        return convertView;
     }
 
-    private void getTime(long mili){
+    static class ViewHolder{
+        ImageView miniProfilePicture;
+        TextView commentUsername;
+        TextView commentText;
+        TextView commentPostedText;
+        TextView answerText;
+
+    }
+
+    private void getTime(long mili, ViewHolder viewHolder){
 
         long difference = System.currentTimeMillis() - mili;
         long time = TimeUnit.MILLISECONDS.toSeconds(difference);
@@ -117,15 +118,15 @@ public class CommentListAdapter extends ArrayAdapter<Comment> {
                 if(time >= 24){
 
                     time = TimeUnit.HOURS.toDays(time);
-                    commentPostedText.setText(time + "d ago");
+                    viewHolder.commentPostedText.setText(time + "d ago");
                 }else{
-                    commentPostedText.setText(time + "h ago");
+                    viewHolder.commentPostedText.setText(time + "h ago");
                 }
             }else {
-                commentPostedText.setText(time + "m ago");
+                viewHolder.commentPostedText.setText(time + "m ago");
             }
         }else{
-            commentPostedText.setText(time + "s ago");
+            viewHolder.commentPostedText.setText(time + "s ago");
         }
     }
 

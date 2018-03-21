@@ -88,8 +88,12 @@ public class MainActivity extends AppCompatActivity
         setupDrawer();
         mainLogic();
 
+    }
 
-
+    @Override
+    protected void onResume() {
+        super.onResume();
+        populateLists();
     }
 
     private void setupDrawer() {
@@ -161,7 +165,7 @@ public class MainActivity extends AppCompatActivity
         posts = new ArrayList<>();
         users = new ArrayList<>();
 
-        populateLists();
+        //populateLists();
 
         postAdp = new PostListAdapter(posts, getApplicationContext());
 

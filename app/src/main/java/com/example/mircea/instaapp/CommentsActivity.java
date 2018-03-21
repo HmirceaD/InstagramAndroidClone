@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.mircea.instaapp.Raw.BitmapSampleDecoder;
 import com.example.mircea.instaapp.Raw.Comment;
 import com.example.mircea.instaapp.Raw.CommentListAdapter;
@@ -174,9 +175,9 @@ public class CommentsActivity extends AppCompatActivity {
                 @Override
                 public void onSuccess(byte[] bytes) {
 
-                    BitmapSampleDecoder bitmapSampleDecoder = new BitmapSampleDecoder(bytes, miniProfilePicture.getHeight(), miniProfilePicture.getWidth());
-
-                    miniProfilePicture.setImageBitmap(bitmapSampleDecoder.decodeBitmap());
+                    Glide.with(miniProfilePicture)
+                            .load(bytes)
+                            .into(miniProfilePicture);
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
@@ -186,7 +187,9 @@ public class CommentsActivity extends AppCompatActivity {
             });
         }else{
             /*no profile picture found*/
-            miniProfilePicture.setImageResource(R.drawable.instagram_default2);
+            Glide.with(miniProfilePicture)
+                    .load(R.drawable.instagram_default2)
+                    .into(miniProfilePicture);
         }
 
     }

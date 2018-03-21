@@ -16,6 +16,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.Glide.*;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.mircea.instaapp.CommentsActivity;
 import com.example.mircea.instaapp.R;
 import com.example.mircea.instaapp.UserProfileActivity;
@@ -40,11 +42,6 @@ public class PostListAdapter extends ArrayAdapter<Post>{
 
     private int globalPosition;
 
-    //Ui
-    //private ImageView likeButton;
-    //private TextView commentsText;
-    //private ImageView userProfPic;
-
     public PostListAdapter(ArrayList<Post> p, Context c){
         super(c, R.layout.insta_post, p);
 
@@ -57,7 +54,7 @@ public class PostListAdapter extends ArrayAdapter<Post>{
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
 
-        ViewHolder viewHolder;
+        PostListAdapter.ViewHolder viewHolder;
         globalPosition = position;
 
         if(convertView == null){
@@ -72,58 +69,65 @@ public class PostListAdapter extends ArrayAdapter<Post>{
             viewHolder.likeButton = convertView.findViewById(R.id.likeButton);
             viewHolder.commentsButton = convertView.findViewById(R.id.commentButton);
             viewHolder.shareButton = convertView.findViewById(R.id.shareButton);
-
-            if(viewHolder.userProfPic != null){
                 //Set the Profile picture
-
-                if(viewHolder.username != null){
-                    viewHolder.username.setText(postList.get(globalPosition).getUsername());
-                }
-
-                if(viewHolder.likesText != null){
-                    viewHolder.likesText.setText(postList.get(globalPosition).getLikes() + " likes");
-                }
-
-                if(viewHolder.commentsText != null){
-                    viewHolder.commentsText.setText("See all " + postList.get(globalPosition).getComments() + " comments");
-                }
-
-                if(viewHolder.likeButton != null){
-                    viewHolder.likeButton.setImageResource(R.drawable.whiteheart);
-                }
-
-
-                if(viewHolder.commentsButton != null){
-                    viewHolder.commentsButton.setImageResource(R.drawable.commentbutton);
-
-                }
-
-                if(viewHolder.shareButton != null){
-                    viewHolder.shareButton.setImageResource(R.drawable.sharebutton);
-                }
-            }
 
             convertView.setTag(viewHolder);
 
         }else{
 
-            viewHolder = (ViewHolder) convertView.getTag();
+            viewHolder = (PostListAdapter.ViewHolder) convertView.getTag();
+        }
+
+        if(viewHolder.image != null && postList.get(globalPosition).getUserImage() != null){
+            viewHolder.image.setImageResource(R.drawable.defaultpost);
+        }
+
+        if(viewHolder.username != null){
+            viewHolder.username.setText(postList.get(globalPosition).getUsername());
+        }
+
+        if(viewHolder.likesText != null){
+            viewHolder.likesText.setText(postList.get(globalPosition).getLikes() + " likes");
+        }
+
+        if(viewHolder.commentsText != null){
+            viewHolder.commentsText.setText("See all " + postList.get(globalPosition).getComments() + " comments");
+        }
+
+        if(viewHolder.likeButton != null){
+            viewHolder.likeButton.setImageResource(R.drawable.whiteheart);
         }
 
 
+        if(viewHolder.commentsButton != null){
+            viewHolder.commentsButton.setImageResource(R.drawable.commentbutton);
+
+        }
+
+        if(viewHolder.shareButton != null){
+            viewHolder.shareButton.setImageResource(R.drawable.sharebutton);
+        }
+
+        Glide.with(viewHolder.image)
+                .load(postList.get(globalPosition).getUserImage())
+                .into(viewHolder.image);
+
+        if(postList.get(globalPosition).getUserProfilePicture() != null){
+
+            Glide.with(viewHolder.userProfPic)
+                    .load(postList.get(globalPosition).getUserProfilePicture())
+                    .into(viewHolder.userProfPic);
+        }else{
+
+            Glide.with(viewHolder.userProfPic)
+                    .load(R.drawable.instagram_default2)
+                    .into(viewHolder.userProfPic);
+        }
 
         viewHolder.userProfPic.setTag(R.id.postUserPicture, position);
         viewHolder.userProfPic.setOnClickListener(new MainImageClickListener());
 
-        Glide.with(mContext)
-                .load(postList.get(globalPosition).getUserProfilePicture())
-                .into(viewHolder.userProfPic);
-
-        Glide.with(mContext)
-                .load(postList.get(globalPosition).getUserImage())
-                .into(viewHolder.image);
-
-        viewHolder.commentsButton.setTag(R.id.postImage,position);
+        viewHolder.commentsButton.setTag(R.id.commentButton,position);
         viewHolder.commentsButton.setOnClickListener(new CommentClickListener());
 
         return convertView;
@@ -179,7 +183,7 @@ public class PostListAdapter extends ArrayAdapter<Post>{
 
             Intent it = new Intent(mContext, CommentsActivity.class);
             it.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            it.putExtra("PushId", postList.get((Integer)view.getTag(R.id.postImage)).getPushId());
+            it.putExtra("PushId", postList.get((Integer)view.getTag(R.id.commentButton)).getPushId());
             mContext.startActivity(it);
         }
     }

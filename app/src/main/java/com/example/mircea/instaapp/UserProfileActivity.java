@@ -15,6 +15,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.mircea.instaapp.Raw.BitmapSampleDecoder;
 import com.example.mircea.instaapp.Raw.EmailRefactor;
 import com.example.mircea.instaapp.Raw.Post;
@@ -63,9 +64,6 @@ public class UserProfileActivity extends AppCompatActivity {
     //Miscelasnios nu stiu cum se scrie plm
     private Intent myIntent;
     private String crrUserEmail;
-
-    //Initialize new Intent
-
 
     @Override
     protected void onNewIntent(Intent intent) {
@@ -196,9 +194,7 @@ public class UserProfileActivity extends AppCompatActivity {
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
-            public void onFailure(@NonNull Exception e) {
-
-            }
+            public void onFailure(@NonNull Exception e) {}
         });
     }
 
@@ -242,14 +238,14 @@ public class UserProfileActivity extends AppCompatActivity {
 
                 if(bytes != null){
 
-                    BitmapSampleDecoder bitmapSampleDecoder = new BitmapSampleDecoder(bytes, profilePicture.getHeight(), profilePicture.getWidth());
-
-                    Bitmap profileBitmap = bitmapSampleDecoder.decodeBitmap();
-
-                    profilePicture.setImageBitmap(profileBitmap);
+                    Glide.with(profilePicture)
+                            .load(bytes)
+                            .into(profilePicture);
                 }else{
 
-                    profilePicture.setImageResource(R.drawable.instagram_default2);
+                    Glide.with(profilePicture)
+                            .load(R.drawable.instagram_default2)
+                            .into(profilePicture);
                 }
             }
 
@@ -257,7 +253,9 @@ public class UserProfileActivity extends AppCompatActivity {
             @Override
             public void onFailure(@NonNull Exception e) {
 
-                profilePicture.setImageResource(R.drawable.instagram_default2);
+                Glide.with(profilePicture)
+                        .load(R.drawable.instagram_default2)
+                        .into(profilePicture);
 
                 Toast.makeText(getApplicationContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
             }
