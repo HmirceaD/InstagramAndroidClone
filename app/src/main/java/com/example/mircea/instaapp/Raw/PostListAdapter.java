@@ -2,6 +2,8 @@ package com.example.mircea.instaapp.Raw;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -38,7 +40,7 @@ public class PostListAdapter extends ArrayAdapter<Post>{
     private boolean isLike = true;
 
     //inflater
-    LayoutInflater lI;
+    private LayoutInflater lI;
 
     private int globalPosition;
 
@@ -48,17 +50,20 @@ public class PostListAdapter extends ArrayAdapter<Post>{
         this.postList = p;
         this.mContext = c;
         lI = LayoutInflater.from(mContext);
+        doubleHandler = new Handler();
     }
 
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
 
-        PostListAdapter.ViewHolder viewHolder;
+        //TODO(8): TAKE GLIDE OUT
+
+        ViewHolder viewHolder;
         globalPosition = position;
 
         if(convertView == null){
-            convertView = lI.inflate(R.layout.insta_post, null);
+            convertView = lI.from(mContext).inflate(R.layout.insta_post, null);
             viewHolder = new ViewHolder();
 
             viewHolder.userProfPic = convertView.findViewById(R.id.postUserPicture);
@@ -78,35 +83,17 @@ public class PostListAdapter extends ArrayAdapter<Post>{
             viewHolder = (PostListAdapter.ViewHolder) convertView.getTag();
         }
 
-        if(viewHolder.image != null && postList.get(globalPosition).getUserImage() != null){
-            viewHolder.image.setImageResource(R.drawable.defaultpost);
-        }
+        viewHolder.username.setText(postList.get(globalPosition).getUsername());
 
-        if(viewHolder.username != null){
-            viewHolder.username.setText(postList.get(globalPosition).getUsername());
-        }
+        viewHolder.likesText.setText(postList.get(globalPosition).getLikes() + " likes");
 
-        if(viewHolder.likesText != null){
-            viewHolder.likesText.setText(postList.get(globalPosition).getLikes() + " likes");
-        }
+        viewHolder.commentsText.setText("See all " + postList.get(globalPosition).getComments() + " comments");
 
-        if(viewHolder.commentsText != null){
-            viewHolder.commentsText.setText("See all " + postList.get(globalPosition).getComments() + " comments");
-        }
+        viewHolder.likeButton.setImageResource(R.drawable.whiteheart);
 
-        if(viewHolder.likeButton != null){
-            viewHolder.likeButton.setImageResource(R.drawable.whiteheart);
-        }
+        viewHolder.commentsButton.setImageResource(R.drawable.commentbutton);
 
-
-        if(viewHolder.commentsButton != null){
-            viewHolder.commentsButton.setImageResource(R.drawable.commentbutton);
-
-        }
-
-        if(viewHolder.shareButton != null){
-            viewHolder.shareButton.setImageResource(R.drawable.sharebutton);
-        }
+        viewHolder.shareButton.setImageResource(R.drawable.sharebutton);
 
         Glide.with(viewHolder.image)
                 .load(postList.get(globalPosition).getUserImage())
@@ -117,6 +104,7 @@ public class PostListAdapter extends ArrayAdapter<Post>{
             Glide.with(viewHolder.userProfPic)
                     .load(postList.get(globalPosition).getUserProfilePicture())
                     .into(viewHolder.userProfPic);
+
         }else{
 
             Glide.with(viewHolder.userProfPic)
@@ -125,7 +113,12 @@ public class PostListAdapter extends ArrayAdapter<Post>{
         }
 
         viewHolder.userProfPic.setTag(R.id.postUserPicture, position);
-        viewHolder.userProfPic.setOnClickListener(new MainImageClickListener());
+        viewHolder.userProfPic.setOnClickListener(new ProfileImageClickListener());
+
+        viewHolder.image.setOnClickListener((View v) -> {
+
+            doubleClickImage(v, viewHolder);
+        });
 
         viewHolder.commentsButton.setTag(R.id.commentButton,position);
         viewHolder.commentsButton.setOnClickListener(new CommentClickListener());
@@ -163,7 +156,7 @@ public class PostListAdapter extends ArrayAdapter<Post>{
     }
 
 
-    private class MainImageClickListener implements View.OnClickListener {
+    private class ProfileImageClickListener implements View.OnClickListener {
         //double click framework
 
         @Override
@@ -185,6 +178,38 @@ public class PostListAdapter extends ArrayAdapter<Post>{
             it.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             it.putExtra("PushId", postList.get((Integer)view.getTag(R.id.commentButton)).getPushId());
             mContext.startActivity(it);
+        }
+    }
+
+    public void doubleClickImage(View v, ViewHolder viewHolder){
+        /*HANDLE THE LOGIC HERE*/
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+
+                doubleClick = false;
+            }
+        };
+
+        if (doubleClick) {
+
+            if(isLike){
+
+                viewHolder.likeButton.setImageResource(R.drawable.redheart);
+
+                isLike = false;
+            }else{
+
+                viewHolder.likeButton.setImageResource(R.drawable.whiteheart);
+                isLike = true;
+            }
+
+            doubleClick = false;
+
+        }else {
+
+            doubleClick = true;
+            doubleHandler.postDelayed(r, 500);
         }
     }
 }

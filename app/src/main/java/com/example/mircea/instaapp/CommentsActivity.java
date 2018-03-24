@@ -28,6 +28,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -219,6 +221,8 @@ public class CommentsActivity extends AppCompatActivity {
 
                         if(task.isSuccessful()){
                             Toast.makeText(getApplicationContext(), "Comment posted succesfully", Toast.LENGTH_SHORT).show();
+                            incrementCommentNumber(crrPostPushId);
+
                         }else{
                             Toast.makeText(getApplicationContext(), "Something went wrong bro", Toast.LENGTH_SHORT).show();
                         }
@@ -226,6 +230,34 @@ public class CommentsActivity extends AppCompatActivity {
                 });
             }
         }
+    }
+
+    private void incrementCommentNumber(String pushId) {
+
+        final DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Post/" + pushId + "/comments");
+
+        databaseReference.runTransaction(new Transaction.Handler() {
+            @Override
+            public Transaction.Result doTransaction(MutableData mutableData) {
+
+                if(mutableData == null)
+                    return null;
+
+                int commentNumber = mutableData.getValue(Integer.class);
+
+                commentNumber += 1;
+
+                mutableData.setValue(commentNumber);
+
+                return Transaction.success(mutableData);
+            }
+
+            @Override
+            public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
+
+            }
+        });
+
     }
 
     private Comment buildComment(String commentStr){

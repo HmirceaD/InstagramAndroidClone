@@ -93,6 +93,9 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
+
+
+        posts = new ArrayList<>();
         populateLists();
     }
 
@@ -162,21 +165,23 @@ public class MainActivity extends AppCompatActivity
 
         postsList = findViewById(R.id.postLists);
 
-        posts = new ArrayList<>();
         users = new ArrayList<>();
-
-        //populateLists();
-
-        postAdp = new PostListAdapter(posts, getApplicationContext());
-
-
-        postsList.setAdapter(postAdp);
 
     }
 
     public void populateLists(){
 
         /*initialize all the posts that the user will see*/
+
+        if(postAdp == null){
+
+            postAdp = new PostListAdapter(posts, getApplicationContext());
+
+            postsList.setAdapter(postAdp);
+        }else{
+            postAdp.notifyDataSetChanged();
+        }
+
 
         DatabaseReference database = FirebaseDatabase.getInstance().getReference("Post");
 
@@ -185,6 +190,7 @@ public class MainActivity extends AppCompatActivity
             public void onDataChange(DataSnapshot dataSnapshot) {
 
                 postAdp = new PostListAdapter(posts, getApplicationContext());
+                posts.clear();
 
                 for(DataSnapshot data: dataSnapshot.getChildren()){
                     //get the data for the post

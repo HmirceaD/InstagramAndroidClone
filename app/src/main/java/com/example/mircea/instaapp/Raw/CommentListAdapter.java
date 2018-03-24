@@ -54,31 +54,20 @@ public class CommentListAdapter extends ArrayAdapter<Comment> {
             viewHolder.answerText = convertView.findViewById(R.id.answerTextView);
 
             /*Initiate all the values*/
-            if(viewHolder.commentUsername != null){
-
-                viewHolder.commentUsername.setText(commentList.get(globalPosition).getCommentUsername());
-            }
-
-            if(viewHolder.commentText != null){
-
-                viewHolder.commentText.setText(commentList.get(globalPosition).getCommentText());
-            }
-
-            if(viewHolder.commentPostedText != null){
-
-                getTime(commentList.get(globalPosition).getTimePosted(), viewHolder);
-            }
-
-            if(viewHolder.answerText != null){
-
-                viewHolder.answerText.setText("Answer");
-            }
 
             convertView.setTag(viewHolder);
 
         }else{
             viewHolder = (CommentListAdapter.ViewHolder) convertView.getTag();
         }
+
+        viewHolder.commentUsername.setText(commentList.get(globalPosition).getCommentUsername());
+
+        viewHolder.commentText.setText(commentList.get(globalPosition).getCommentText());
+
+        getTime(commentList.get(globalPosition).getTimePosted(), viewHolder);
+
+        viewHolder.answerText.setText("Answer");
 
         if(commentList.get(globalPosition).getMiniProfilePicture() != null){
 
