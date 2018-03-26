@@ -23,16 +23,37 @@ import com.bumptech.glide.request.RequestOptions;
 import com.example.mircea.instaapp.CommentsActivity;
 import com.example.mircea.instaapp.R;
 import com.example.mircea.instaapp.UserProfileActivity;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
+import static android.support.v4.content.ContextCompat.getDrawable;
 import static android.support.v4.content.ContextCompat.startActivity;
 
 public class PostListAdapter extends ArrayAdapter<Post>{
 
+    //String TAG
+    final String LIKETAGFAILURE = "LikeTagFailure";
+
     //Array adapter
     private ArrayList<Post> postList;
     private Context mContext;
+
+    //
+    private FirebaseAuth mAuth;
+    private FirebaseUser user;
 
     //Logic
     private boolean  doubleClick = false;
@@ -47,17 +68,17 @@ public class PostListAdapter extends ArrayAdapter<Post>{
     public PostListAdapter(ArrayList<Post> p, Context c){
         super(c, R.layout.insta_post, p);
 
+        this.mAuth = FirebaseAuth.getInstance();
         this.postList = p;
         this.mContext = c;
-        lI = LayoutInflater.from(mContext);
-        doubleHandler = new Handler();
+        this.lI = LayoutInflater.from(mContext);
+        this.doubleHandler = new Handler();
     }
 
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-
-        //TODO(8): TAKE GLIDE OUT
+        //TODO(5): ADD THE CHECK FOR IF LIKED
 
         ViewHolder viewHolder;
         globalPosition = position;
@@ -89,11 +110,26 @@ public class PostListAdapter extends ArrayAdapter<Post>{
 
         viewHolder.commentsText.setText("See all " + postList.get(globalPosition).getComments() + " comments");
 
-        viewHolder.likeButton.setImageResource(R.drawable.whiteheart);
+        Glide.with(mContext)
+                .load("")
+                .apply(new RequestOptions()
+                        .placeholder(R.drawable.whiteheart)
+                        .fitCenter())
+                .into(viewHolder.likeButton);
 
-        viewHolder.commentsButton.setImageResource(R.drawable.commentbutton);
+        Glide.with(mContext)
+                .load("")
+                .apply(new RequestOptions()
+                        .placeholder(R.drawable.commentbutton)
+                        .fitCenter())
+                .into(viewHolder.commentsButton);
 
-        viewHolder.shareButton.setImageResource(R.drawable.sharebutton);
+        Glide.with(mContext)
+                .load("")
+                .apply(new RequestOptions()
+                    .placeholder(R.drawable.sharebutton)
+                    .fitCenter())
+                .into(viewHolder.shareButton);
 
         Glide.with(viewHolder.image)
                 .load(postList.get(globalPosition).getUserImage())
@@ -101,42 +137,29 @@ public class PostListAdapter extends ArrayAdapter<Post>{
 
         if(postList.get(globalPosition).getUserProfilePicture() != null){
 
-            Glide.with(viewHolder.userProfPic)
+            Glide.with(mContext)
                     .load(postList.get(globalPosition).getUserProfilePicture())
                     .into(viewHolder.userProfPic);
 
         }else{
 
-            Glide.with(viewHolder.userProfPic)
+            Glide.with(mContext)
                     .load(R.drawable.instagram_default2)
                     .into(viewHolder.userProfPic);
         }
 
+        viewHolder.likeButton.setTag(R.id.likeButton, position);
+        viewHolder.likeButton.setOnClickListener((View v) -> heartImageClick(v, viewHolder));
+
         viewHolder.userProfPic.setTag(R.id.postUserPicture, position);
         viewHolder.userProfPic.setOnClickListener(new ProfileImageClickListener());
 
-        viewHolder.image.setOnClickListener((View v) -> {
+        viewHolder.image.setOnClickListener((View v) -> doubleClickImage(v, viewHolder));
 
-            doubleClickImage(v, viewHolder);
-        });
-
-        viewHolder.commentsButton.setTag(R.id.commentButton,position);
+        viewHolder.commentsButton.setTag(R.id.commentButton, position);
         viewHolder.commentsButton.setOnClickListener(new CommentClickListener());
 
         return convertView;
-
-    }
-
-    static class ViewHolder{
-        ImageView userProfPic;
-        TextView username;
-        ImageView image;
-        TextView likesText;
-        TextView commentsText;
-        ImageView likeButton;
-        ImageView commentsButton;
-        ImageView shareButton;
-
     }
 
     @Override
@@ -146,9 +169,7 @@ public class PostListAdapter extends ArrayAdapter<Post>{
 
     @Nullable
     @Override
-    public Post getItem(int position) {
-        return super.getItem(position);
-    }
+    public Post getItem(int position) {return super.getItem(position);}
 
     @Override
     public int getPosition(@Nullable Post item) {
@@ -181,29 +202,124 @@ public class PostListAdapter extends ArrayAdapter<Post>{
         }
     }
 
-    public void doubleClickImage(View v, ViewHolder viewHolder){
+    private String refactorEmailOfLike() throws NullPointerException{
+
+        EmailRefactor emailRefactor = new EmailRefactor();
+        user = mAuth.getCurrentUser();
+        return emailRefactor.refactorEmail(user.getEmail());
+    }
+
+    private void heartImageClick(View v, ViewHolder viewHolder){
+
+        if(isLike){
+            //like the image
+            addLikeArray(v);
+            handleLikeCounter(v, isLike);
+
+            //handle the ui stuff
+            viewHolder.likeButton.setImageResource(R.drawable.redheart);
+            viewHolder.likesText.setText((postList.get((Integer)v.getTag(R.id.likeButton)).getLikes() + 1) + " likes");
+
+            isLike = false;
+
+        }else{
+            //take like back
+            removeLikeArray(v);
+            handleLikeCounter(v, isLike);
+
+            //handle the ui stuff
+            viewHolder.likeButton.setImageResource(R.drawable.whiteheart);
+            viewHolder.likesText.setText(postList.get((Integer)v.getTag(R.id.likeButton)).getLikes() + " likes");
+
+            isLike = true;
+        }
+
+    }
+
+    private void removeLikeArray(View v) {
+
+        final String reference = "Post/" + postList.get((Integer) v.getTag(R.id.likeButton)).getPushId() + "/Likes/" + refactorEmailOfLike();
+        final DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference(reference);
+
+        databaseReference.removeValue().addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.i(LIKETAGFAILURE, "could remove array of likes");
+            }
+        });
+    }
+
+    private void addLikeArray(View v) {
+
+        final String reference = "Post/" + postList.get((Integer) v.getTag(R.id.likeButton)).getPushId() + "/Likes";
+        final DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference(reference);
+
+        Map<String, Object> likesMap = new HashMap<>();
+
+        try{
+            likesMap.put(refactorEmailOfLike(), "userId");
+        }catch (NullPointerException ex){
+            ex.printStackTrace();
+        }
+
+        databaseReference.updateChildren(likesMap).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.i(LIKETAGFAILURE, "could add array of likes");
+            }
+        });
+    }
+
+    private void handleLikeCounter(View v, boolean like) {
+
+        final String reference = "Post/" + postList.get((Integer) v.getTag(R.id.likeButton)).getPushId() + "/likes";
+        final DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference(reference);
+
+            databaseReference.runTransaction(new Transaction.Handler() {
+                @Override
+                public Transaction.Result doTransaction(MutableData mutableData) {
+
+                    if(mutableData.getValue() != null){
+                        int value = mutableData.getValue(Integer.class);
+
+                        if(like){
+                            //like
+                            value ++;
+                        }else{
+                            //take like back
+                            value --;
+                        }
+                        mutableData.setValue(value);
+                    }
+                    return Transaction.success(mutableData);
+                }
+                @Override
+                public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {}
+            });
+
+    }
+
+
+    private void doubleClickImage(View v, ViewHolder viewHolder){
         /*HANDLE THE LOGIC HERE*/
         Runnable r = new Runnable() {
             @Override
             public void run() {
-
                 doubleClick = false;
             }
         };
 
         if (doubleClick) {
 
-            if(isLike){
+            //add like
+            addLikeArray(v);
+            handleLikeCounter(v, isLike);
 
-                viewHolder.likeButton.setImageResource(R.drawable.redheart);
+            //handle the ui stuff
+            viewHolder.likeButton.setImageResource(R.drawable.redheart);
+            viewHolder.likesText.setText(postList.get((Integer)v.getTag(R.id.likeButton) +1) + " likes");
 
-                isLike = false;
-            }else{
-
-                viewHolder.likeButton.setImageResource(R.drawable.whiteheart);
-                isLike = true;
-            }
-
+            isLike = false;
             doubleClick = false;
 
         }else {
@@ -211,5 +327,17 @@ public class PostListAdapter extends ArrayAdapter<Post>{
             doubleClick = true;
             doubleHandler.postDelayed(r, 500);
         }
+    }
+
+    static class ViewHolder{
+        ImageView userProfPic;
+        TextView username;
+        ImageView image;
+        TextView likesText;
+        TextView commentsText;
+        ImageView likeButton;
+        ImageView commentsButton;
+        ImageView shareButton;
+
     }
 }

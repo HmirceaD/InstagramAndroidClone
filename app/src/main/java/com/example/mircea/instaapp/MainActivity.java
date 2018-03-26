@@ -185,7 +185,7 @@ public class MainActivity extends AppCompatActivity
 
         DatabaseReference database = FirebaseDatabase.getInstance().getReference("Post");
 
-        database.addValueEventListener(new ValueEventListener() {
+        database.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 

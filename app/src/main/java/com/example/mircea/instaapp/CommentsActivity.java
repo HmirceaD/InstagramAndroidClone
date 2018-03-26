@@ -240,22 +240,19 @@ public class CommentsActivity extends AppCompatActivity {
             @Override
             public Transaction.Result doTransaction(MutableData mutableData) {
 
-                if(mutableData == null)
-                    return null;
+                if(mutableData.getValue() != null){
+                    int commentNumber = mutableData.getValue(Integer.class);
 
-                int commentNumber = mutableData.getValue(Integer.class);
+                    commentNumber += 1;
 
-                commentNumber += 1;
-
-                mutableData.setValue(commentNumber);
+                    mutableData.setValue(commentNumber);
+                }
 
                 return Transaction.success(mutableData);
             }
 
             @Override
-            public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
-
-            }
+            public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {}
         });
 
     }
