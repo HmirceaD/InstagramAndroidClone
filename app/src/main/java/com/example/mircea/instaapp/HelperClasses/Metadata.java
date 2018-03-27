@@ -1,4 +1,4 @@
-package com.example.mircea.instaapp.Raw;
+package com.example.mircea.instaapp.HelperClasses;
 
 public class Metadata {
 

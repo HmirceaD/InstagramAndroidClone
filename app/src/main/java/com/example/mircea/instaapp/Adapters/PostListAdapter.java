@@ -1,13 +1,10 @@
-package com.example.mircea.instaapp.Raw;
+package com.example.mircea.instaapp.Adapters;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,17 +12,15 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.Glide.*;
 import com.bumptech.glide.request.RequestOptions;
-import com.example.mircea.instaapp.CommentsActivity;
+import com.example.mircea.instaapp.Activities.CommentsActivity;
+import com.example.mircea.instaapp.HelperClasses.EmailRefactor;
 import com.example.mircea.instaapp.R;
-import com.example.mircea.instaapp.UserProfileActivity;
-import com.google.android.gms.tasks.OnCompleteListener;
+import com.example.mircea.instaapp.Raw.Post;
+import com.example.mircea.instaapp.Activities.UserProfileActivity;
 import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -38,9 +33,6 @@ import com.google.firebase.database.Transaction;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-
-import static android.support.v4.content.ContextCompat.getDrawable;
-import static android.support.v4.content.ContextCompat.startActivity;
 
 public class PostListAdapter extends ArrayAdapter<Post>{
 

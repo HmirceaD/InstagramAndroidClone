@@ -1,9 +1,8 @@
-package com.example.mircea.instaapp.Raw;
+package com.example.mircea.instaapp.Adapters;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,8 +12,8 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.mircea.instaapp.R;
+import com.example.mircea.instaapp.Raw.Comment;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 

@@ -27,8 +27,6 @@ public class Comment {
         this.timePosted = timePosted;
     }
 
-
-
     public byte[] getMiniProfilePicture() {return miniProfilePicture;}
 
     public void setMiniProfilePicture(byte[] miniProfilePicture) {this.miniProfilePicture = miniProfilePicture;}

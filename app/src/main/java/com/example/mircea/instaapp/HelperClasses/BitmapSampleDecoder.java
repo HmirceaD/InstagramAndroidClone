@@ -1,4 +1,4 @@
-package com.example.mircea.instaapp.Raw;
+package com.example.mircea.instaapp.HelperClasses;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -51,8 +51,6 @@ public class BitmapSampleDecoder {
                 sampleSize *= 2;
             }
         }
-
-        Log.i("AMPULA MARE", Integer.toString(sampleSize));
 
         return sampleSize;
     }
