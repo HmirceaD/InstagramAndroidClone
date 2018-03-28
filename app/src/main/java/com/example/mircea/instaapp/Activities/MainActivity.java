@@ -1,6 +1,7 @@
 package com.example.mircea.instaapp.Activities;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -17,9 +18,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.example.mircea.instaapp.Firebase.SetUserProfilePicture;
+import com.example.mircea.instaapp.Listeners.DrawerItemsSelectedListener;
 import com.example.mircea.instaapp.R;
 import com.example.mircea.instaapp.Raw.Post;
 import com.example.mircea.instaapp.Adapters.PostListAdapter;
@@ -38,13 +42,10 @@ import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity {
 
     //Firebase Stuff
     private FirebaseAuth mAuth;
-
-    private Uri tempUri;
 
     //Ui
     private ListView postsList;
@@ -85,13 +86,7 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+        initFloatingButton(fab);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -100,7 +95,44 @@ public class MainActivity extends AppCompatActivity
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+        initCustomNavigationDrawer(navigationView);
+        navigationView.setNavigationItemSelectedListener(new DrawerItemsSelectedListener(getApplicationContext()));
+    }
+
+    //Custom Floating Button behaviour
+    private void initFloatingButton(FloatingActionButton fab) {
+
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
+        });
+    }
+
+    //Custom Navigation Drawer Behavior
+    private void initCustomNavigationDrawer(NavigationView navigationView) {
+
+        if(navigationView != null){
+
+            LinearLayout linearLayout = (LinearLayout) navigationView.getHeaderView(0);
+
+            if(linearLayout != null){
+                linearLayout.setBackgroundColor(Color.BLACK);
+                mAuth = FirebaseAuth.getInstance();
+                FirebaseUser crrUser = mAuth.getCurrentUser();
+
+                TextView usernameTextNav = linearLayout.findViewById(R.id.usernameTextNav);
+                usernameTextNav.setText(crrUser.getDisplayName());
+
+                TextView userEmailTextNav = linearLayout.findViewById(R.id.userEmailTextNav);
+                userEmailTextNav.setText(crrUser.getEmail());
+
+                ImageView userProfilePictureNav = linearLayout.findViewById(R.id.userProfileImageNav);
+                SetUserProfilePicture setUserProfilePicture = new SetUserProfilePicture(crrUser, userProfilePictureNav);
+            }
+        }
     }
 
     /*Handle the logic*/
@@ -114,8 +146,6 @@ public class MainActivity extends AppCompatActivity
 
         userText = findViewById(R.id.userText);
 
-        mAuth = FirebaseAuth.getInstance();
-
         FirebaseUser crrUser = mAuth.getCurrentUser();
 
         try {
@@ -127,10 +157,7 @@ public class MainActivity extends AppCompatActivity
         }
 
         uploadButton = findViewById(R.id.uploadButton);
-        uploadButton.setOnClickListener((View v) -> {
-
-            startActivity(new Intent(getApplication(), UploadPostActivity.class));
-        });
+        uploadButton.setOnClickListener((View v) -> startActivity(new Intent(getApplication(), UploadPostActivity.class)));
     }
 
     /*Setup the ui*/
@@ -156,7 +183,6 @@ public class MainActivity extends AppCompatActivity
         if(postAdp == null){
 
             postAdp = new PostListAdapter(posts, getApplicationContext());
-
             postsList.setAdapter(postAdp);
         }else{
             postAdp.notifyDataSetChanged();
@@ -269,7 +295,8 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.settings) {
+            startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
             return true;
         }
 
@@ -282,28 +309,5 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
-        }
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
-    }
 }

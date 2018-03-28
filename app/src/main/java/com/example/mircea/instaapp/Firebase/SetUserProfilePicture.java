@@ -12,12 +12,12 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-public class SetCommentsUserPicture {
+public class SetUserProfilePicture {
 
     private FirebaseUser crrUser;
     private ImageView miniProfilePicture;
 
-    public SetCommentsUserPicture(FirebaseUser crrUser, ImageView miniProfilePicture){
+    public SetUserProfilePicture(FirebaseUser crrUser, ImageView miniProfilePicture){
 
         this.crrUser = crrUser;
         this.miniProfilePicture = miniProfilePicture;

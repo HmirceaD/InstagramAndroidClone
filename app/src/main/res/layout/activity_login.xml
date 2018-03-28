@@ -8,7 +8,7 @@
     tools:context="com.example.mircea.instaapp.Activities.LoginActivity">
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/userProfileImageNav"
         android:layout_width="350dp"
         android:layout_height="119dp"
         android:layout_marginEnd="8dp"
@@ -77,7 +77,7 @@
         app:layout_constraintEnd_toStartOf="@+id/guideline"
         app:layout_constraintHorizontal_bias="0.465"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView" />
+        app:layout_constraintTop_toBottomOf="@+id/userProfileImageNav" />
 
     <android.support.constraint.Guideline
         android:id="@+id/guideline"
@@ -98,7 +98,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.777"
         app:layout_constraintStart_toStartOf="@+id/guideline"
-        app:layout_constraintTop_toBottomOf="@+id/imageView" />
+        app:layout_constraintTop_toBottomOf="@+id/userProfileImageNav" />
 
     <TextView
         android:id="@+id/textView4"
@@ -111,7 +111,7 @@
         app:layout_constraintEnd_toStartOf="@+id/SignUpTextV"
         app:layout_constraintHorizontal_bias="0.584"
         app:layout_constraintStart_toEndOf="@+id/signInTextViewLogin"
-        app:layout_constraintTop_toBottomOf="@+id/imageView" />
+        app:layout_constraintTop_toBottomOf="@+id/userProfileImageNav" />
 
     <Button
         android:id="@+id/emailSignUpButton"

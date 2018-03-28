@@ -17,6 +17,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.mircea.instaapp.Activities.CommentsActivity;
 import com.example.mircea.instaapp.HelperClasses.EmailRefactor;
+import com.example.mircea.instaapp.Listeners.GoToUserProfileListener;
 import com.example.mircea.instaapp.R;
 import com.example.mircea.instaapp.Raw.Post;
 import com.example.mircea.instaapp.Activities.UserProfileActivity;
@@ -143,8 +144,7 @@ public class PostListAdapter extends ArrayAdapter<Post>{
         viewHolder.likeButton.setTag(R.id.likeButton, position);
         viewHolder.likeButton.setOnClickListener((View v) -> heartImageClick(v, viewHolder));
 
-        viewHolder.userProfPic.setTag(R.id.postUserPicture, position);
-        viewHolder.userProfPic.setOnClickListener(new ProfileImageClickListener());
+        viewHolder.userProfPic.setOnClickListener(new GoToUserProfileListener(postList.get(position).getEmail(), mContext).new ProfileClickListener());
 
         viewHolder.image.setOnClickListener((View v) -> doubleClickImage(v, viewHolder));
 
@@ -166,20 +166,6 @@ public class PostListAdapter extends ArrayAdapter<Post>{
     @Override
     public int getPosition(@Nullable Post item) {
         return super.getPosition(item);
-    }
-
-
-    private class ProfileImageClickListener implements View.OnClickListener {
-        //double click framework
-
-        @Override
-        public void onClick(View view) {
-
-            Intent it = new Intent(mContext, UserProfileActivity.class);
-            it.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            it.putExtra("Email", postList.get((Integer)view.getTag(R.id.postUserPicture)).getEmail());
-            mContext.startActivity(it);
-        }
     }
 
     private class CommentClickListener implements View.OnClickListener{

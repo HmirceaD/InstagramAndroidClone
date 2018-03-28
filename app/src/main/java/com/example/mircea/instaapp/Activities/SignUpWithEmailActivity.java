@@ -162,7 +162,7 @@ public class SignUpWithEmailActivity extends AppCompatActivity {
             Toast.makeText(this, "Please fill out all the forms", Toast.LENGTH_SHORT).show();
         }
 
-        SignUpUserWithEmail signUpUserWithEmail = new SignUpUserWithEmail(temp_user, pathToImage, userPhotoUrl);
+        SignUpUserWithEmail signUpUserWithEmail = new SignUpUserWithEmail(temp_user, pathToImage);
 
         signUpUserWithEmail.firebaseSignUpWithEmail(mAuth, emailTextField, passwordTextField, usernameTextField,
                 confEmailTextField, imageBitmap, getApplicationContext());
