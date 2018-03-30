@@ -164,14 +164,11 @@ public class MainActivity extends AppCompatActivity {
     private void setupList() {
 
         postsList = findViewById(R.id.postLists);
-
-        /*Populates the posts lists, main content is here*/
         //Todo(4): Add the strings to the string folder
         //Todo(6): TEST AND DOCUMENT ALL THIS !!!!!
         //Todo(7): Resize the user picture
 
         postsList = findViewById(R.id.postLists);
-
         users = new ArrayList<>();
 
     }
@@ -188,9 +185,7 @@ public class MainActivity extends AppCompatActivity {
             postAdp.notifyDataSetChanged();
         }
 
-
         DatabaseReference database = FirebaseDatabase.getInstance().getReference("Post");
-
         database.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

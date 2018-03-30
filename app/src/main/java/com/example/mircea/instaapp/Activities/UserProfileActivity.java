@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -11,13 +13,14 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.mircea.instaapp.HelperClasses.EmailRefactor;
+import com.example.mircea.instaapp.Listeners.FollowClickListener;
 import com.example.mircea.instaapp.R;
 import com.example.mircea.instaapp.Raw.Post;
 import com.example.mircea.instaapp.Adapters.PostListAdapter;
-import com.example.mircea.instaapp.Raw.User;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -40,9 +43,12 @@ public class UserProfileActivity extends AppCompatActivity {
     private TextView postsNumber;
     private TextView followersNumber;
     private TextView followingNumber;
+    private ImageButton followButton;
 
     //Logic
     private int postsCounter = 0;
+    private ArrayList<String> followersArray = new ArrayList<>();
+    private boolean isFollow;
 
     //posts list
     private ListView postsList;
@@ -50,20 +56,22 @@ public class UserProfileActivity extends AppCompatActivity {
     private ArrayList<Post> posts;
 
     //User profile
-    private User crrUser;
+    private FirebaseUser crrUser;
 
     //Miscelasnios nu stiu cum se scrie plm
     private Intent myIntent;
-    private String crrUserEmail;
+    private String pageUserEmail;
 
     @Override
     protected void onNewIntent(Intent intent) {
+
         if(intent != null && intent.hasExtra("Email")){
 
             myIntent = intent;
             EmailRefactor emailRefactor = new EmailRefactor();
-            crrUserEmail = emailRefactor.refactorEmail(myIntent.getStringExtra("Email"));
+            pageUserEmail = emailRefactor.refactorEmail(myIntent.getStringExtra("Email"));
         }
+
         super.onNewIntent(intent);
     }
 
@@ -78,11 +86,18 @@ public class UserProfileActivity extends AppCompatActivity {
 
     private void setupUi() {
 
+        initCurrentUserEmail();
+
+        initFirebase();
+
+        //check if crr user already has follow or not
+
         profilePicture = findViewById(R.id.profilePicture);
         usernameText = findViewById(R.id.usernameText);
         postsNumber = findViewById(R.id.postsNumber);
         followersNumber = findViewById(R.id.followersNumber);
         followingNumber = findViewById(R.id.followingNumber);
+        followButton = findViewById(R.id.followButton);
 
         postsList = findViewById(R.id.postsView);
         posts = new ArrayList<>();
@@ -93,19 +108,10 @@ public class UserProfileActivity extends AppCompatActivity {
     }
 
     private void setupFirebase() {
-
-        mAuth = FirebaseAuth.getInstance();
-
-        EmailRefactor emailRefactor = new EmailRefactor();
-
-        if(myIntent == null){
-            myIntent = getIntent();
-            crrUserEmail = emailRefactor.refactorEmail(myIntent.getStringExtra("Email"));
-        }
-
+        //Get the actual info of the user
         databaseReference = FirebaseDatabase.getInstance().getReference("Users");
 
-        databaseReference.child(crrUserEmail).addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseReference.child(pageUserEmail).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
@@ -119,13 +125,19 @@ public class UserProfileActivity extends AppCompatActivity {
                     String profilePictureUrl = dataSnapshot.child("profilePicture").getValue().toString();
                     setProfilePicture(profilePictureUrl);
 
-                    //set the number of followers
-                    String followersStr = dataSnapshot.child("followersNum").getValue().toString();
-                    followersNumber.setText(followersStr);
+                    //check the number of follows and who they are
+                    for(DataSnapshot data: dataSnapshot.child("Followers").getChildren()){
+                        followersArray.add(data.getKey());
+                    }
+
+                    initFollows();
+
+                    String followerStr = dataSnapshot.child("followersNum").getValue().toString();
+                    followersNumber.setText(followerStr);
 
                     //set the number of follows
-                    String followsStr = dataSnapshot.child("followingNum").getValue().toString();
-                    followingNumber.setText(followsStr);
+                    String followingStr = dataSnapshot.child("followingNum").getValue().toString();
+                    followingNumber.setText(followingStr);
 
                     //get all the user's posts
                     for(DataSnapshot id: dataSnapshot.child("Posts").getChildren()){
@@ -141,6 +153,54 @@ public class UserProfileActivity extends AppCompatActivity {
             public void onCancelled(DatabaseError databaseError) {}
         });
 
+    }
+
+    private boolean initCurrentUserEmail() {
+
+        EmailRefactor emailRefactor = new EmailRefactor();
+
+        if(myIntent == null){
+            myIntent = getIntent();
+            pageUserEmail = emailRefactor.refactorEmail(myIntent.getStringExtra("Email"));
+        }
+        return false;
+    }
+
+    private void initFirebase() {
+
+        mAuth = FirebaseAuth.getInstance();
+        crrUser = mAuth.getCurrentUser();
+    }
+
+    private void initFollows(){
+
+        //initialize if the current user already follows the page user
+        EmailRefactor emailRefactor = new EmailRefactor();
+
+        String crrUserString = emailRefactor.refactorEmail(crrUser.getEmail());
+        String pageUserString = emailRefactor.refactorEmail(pageUserEmail);
+
+        isFollow = checkFollows(crrUserString);
+
+        if(!isFollow){
+            followButton.setImageResource(R.drawable.unfollow_user_button);
+        }
+
+        followButton.setOnClickListener(new FollowClickClass());
+
+    }
+
+    private boolean checkFollows(String crrStr) {
+        /**
+         * true == the crr user doesnt already follow the page user
+         *
+         */
+        for(String follower: followersArray){
+            if(crrStr.equals(follower)){
+                return false;
+            }
+        }
+        return true;
     }
 
     private void addPostToListView(String key) {
@@ -159,7 +219,6 @@ public class UserProfileActivity extends AppCompatActivity {
                     postsNumber.setText(Integer.toString(++postsCounter));
 
                     getPostImage(p, posts, postsList);
-
 
                 }
             }
@@ -251,5 +310,40 @@ public class UserProfileActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private class FollowClickClass implements View.OnClickListener{
+
+        @Override
+        public void onClick(View view) {
+
+            EmailRefactor emailRefactor = new EmailRefactor();
+
+            FollowClickListener followClickListener = new FollowClickListener(emailRefactor.refactorEmail(crrUser.getEmail()),
+            emailRefactor.refactorEmail(pageUserEmail), isFollow, followButton);
+
+            if(!emailRefactor.refactorEmail(crrUser.getEmail()).equals(emailRefactor.refactorEmail(pageUserEmail))){
+
+                changeClientCode(emailRefactor.refactorEmail(pageUserEmail));
+
+            }
+
+        }
+    }
+
+    private void changeClientCode(String crrUserString) {
+
+        if(isFollow){
+            //Follow
+            followButton.setImageResource(R.drawable.unfollow_user_button);
+            followersArray.add(crrUserString);
+            isFollow = false;
+
+        }else{
+            //Unfollow
+            followButton.setImageResource(R.drawable.follow_user_button);
+            followersArray.remove(crrUserString);
+            isFollow = true;
+        }
     }
 }
