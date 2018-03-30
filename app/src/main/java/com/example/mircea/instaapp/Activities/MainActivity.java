@@ -22,6 +22,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.example.mircea.instaapp.Firebase.SetPostsList;
 import com.example.mircea.instaapp.Firebase.SetUserProfilePicture;
 import com.example.mircea.instaapp.Listeners.DrawerItemsSelectedListener;
 import com.example.mircea.instaapp.R;
@@ -185,6 +186,8 @@ public class MainActivity extends AppCompatActivity {
             postAdp.notifyDataSetChanged();
         }
 
+        SetPostsList setPostsList = new SetPostsList();
+
         DatabaseReference database = FirebaseDatabase.getInstance().getReference("Post");
         database.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -198,61 +201,12 @@ public class MainActivity extends AppCompatActivity {
 
                     Post p = data.getValue(Post.class);
                     //get main post image
-                    getPostImage(p, posts, postsList);
+                    setPostsList.getPostImage(p, posts, postsList, postAdp);
                 }
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {}
         });
-    }
-
-    private void getPostImage(Post p, ArrayList<Post> posts, ListView postsList) {
-
-        StorageReference storageReference = FirebaseStorage.getInstance().getReference(p.getImageUrl());
-
-        final long ONE_MEGABYTE = 1024*1024 *5;
-        storageReference.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-            @Override
-            public void onSuccess(byte[] bytes) {
-
-                p.setUserImage(bytes);
-                //set the profile picture
-                getUserProfilePicture(p, posts, postsList);
-
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {}
-        });
-    }
-
-    private void getUserProfilePicture(Post p, ArrayList<Post> posts, ListView postsList) {
-
-        if(p.getUserImageUri() != null){
-            StorageReference storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(p.getUserImageUri());
-
-            final long ONE_MEGABYTE = 1024 * 1024*5;
-            storageReference.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-                @Override
-                public void onSuccess(byte[] bytes) {
-
-                    p.setUserProfilePicture(bytes);
-                    posts.add(p);
-                    postsList.setAdapter(postAdp);
-
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {}
-            });
-
-        }else{
-            /*no profile picture found*/
-            p.setUserProfilePicture(null);
-            posts.add(p);
-            postsList.setAdapter(postAdp);
-        }
-
     }
 
     @Override

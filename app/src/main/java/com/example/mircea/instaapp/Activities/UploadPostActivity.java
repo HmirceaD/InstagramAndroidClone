@@ -158,9 +158,7 @@ public class UploadPostActivity extends AppCompatActivity {
     }
 
     private void postDatabase(DatabaseReference postData, String imageUrl) {
-
-
-
+        //TODO REFACTOR THIS
         /**
          * This pushes the post data to the database
          */
